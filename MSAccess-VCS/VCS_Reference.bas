@@ -57,7 +57,7 @@ failed_guid:
 End Function
 ' Export References to a CSV
     Public Function ExportReferences(obj_path As String)
-    Dim FSO, outfile
+    Dim FSO, Outfile
     Dim line As String
     Dim ref As Reference
     
