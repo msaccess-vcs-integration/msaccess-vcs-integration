@@ -296,6 +296,8 @@ End Sub
 Public Sub VCS_ImportTableDef(ByVal tblName As String, ByVal directory As String)
     Dim filePath As String
     
+    KillTable tblName, CurrentDb
+    
     filePath = directory & tblName & ".xml"
     Application.ImportXML DataSource:=filePath, ImportOptions:=acStructureOnly
 
