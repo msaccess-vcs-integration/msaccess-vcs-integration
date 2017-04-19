@@ -76,7 +76,8 @@ Public Sub VCS_ExportTableDef(ByVal TableName As String, ByVal directory As Stri
     Application.ExportXML _
     ObjectType:=acExportTable, _
     DataSource:=TableName, _
-    SchemaTarget:=fileName
+    SchemaTarget:=fileName, _
+    OtherFlags:=acExportAllTableAndFieldProperties
     
     'exort Data Macros
     VCS_DataMacro.VCS_ExportDataMacros TableName, directory
