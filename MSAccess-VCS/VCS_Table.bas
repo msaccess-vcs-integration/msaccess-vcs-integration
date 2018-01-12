@@ -74,11 +74,11 @@ Public Sub VCS_ExportTableDef(ByVal TableName As String, ByVal directory As Stri
     fileName = directory & TableName & ".xml"
     
     Application.ExportXML _
-    ObjectType:=acExportTable, _
-    DataSource:=TableName, _
-    SchemaTarget:=fileName
-    
-    'exort Data Macros
+               ObjectType:=acExportTable, _
+               DataSource:=TableName, _
+               SchemaTarget:=fileName
+
+    'export Data Macros
     VCS_DataMacro.VCS_ExportDataMacros TableName, directory
 End Sub
 
@@ -96,14 +96,14 @@ Private Function TableExists(ByVal TName As String) As Boolean
     
     Const NAME_NOT_IN_COLLECTION As Integer = 3265
     
-     ' Assume the table or query does not exist.
+    ' Assume the table or query does not exist.
     Found = False
     Set Db = CurrentDb()
     
-     ' Trap for any errors.
+    ' Trap for any errors.
     On Error Resume Next
      
-     ' See if the name is in the Tables collection.
+    ' See if the name is in the Tables collection.
     Test = Db.TableDefs(TName).name
     If Err.Number <> NAME_NOT_IN_COLLECTION Then Found = True
     
@@ -151,14 +151,31 @@ Public Sub VCS_ExportTableData(ByVal tbl_name As String, ByVal obj_path As Strin
     Dim rs As DAO.Recordset ' DAO.Recordset
     Dim fieldObj As Object ' DAO.Field
     Dim c As Long, Value As Variant
+    Dim oXMLFile As Object
+    Dim xmlElement As Object
+    Dim fileName As String
     
     ' Checks first
     If Not TableExists(tbl_name) Then
         Debug.Print "Error: Table " & tbl_name & " missing"
         Exit Sub
     End If
+    fileName = obj_path & tbl_name & ".xml"
     
-    Application.ExportXML ObjectType:=acExportTable, DataSource:=tbl_name, DataTarget:=obj_path & tbl_name & ".xml", OtherFlags:=acExportAllTableAndFieldProperties
+    Application.ExportXML ObjectType:=acExportTable, DataSource:=tbl_name, DataTarget:=fileName, OtherFlags:=acEmbedSchema
+    
+    ' Remove the generated date field to make diff easier.
+    Set oXMLFile = CreateObject("Microsoft.XMLDOM")
+    oXMLFile.async = False
+    oXMLFile.validateOnParse = False
+    oXMLFile.Load (fileName)
+    
+    Set xmlElement = oXMLFile.SelectSingleNode("/root/dataroot")
+    If Not xmlElement Is Nothing Then
+        xmlElement.removeAttribute ("generated")
+        oXMLFile.Save (fileName)
+    End If
+
 End Sub
 
 Public Sub VCS_ImportLinkedTable(ByVal tblName As String, ByRef obj_path As String)
@@ -237,13 +254,13 @@ End Sub
 ' Import Table Definition
 Public Sub VCS_ImportTableDef(ByVal tblName As String, ByVal directory As String)
     Dim filePath As String
-    Dim tbl As Variant
+    Dim tbl As Object
     
     ' Drop table first.
     On Error Resume Next
     Set tbl = CurrentDb.TableDefs(tblName)
-    If Not tbl = Empty Then
-        CurrentDb.Execute "Drop Table " & tblName
+    If Not tbl Is Nothing Then
+        CurrentDb.Execute "Drop Table [" & tblName & "]"
     End If
     filePath = directory & tblName & ".xml"
     Application.ImportXML DataSource:=filePath, ImportOptions:=acStructureOnly

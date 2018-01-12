@@ -7,7 +7,7 @@ Option Explicit
 ' data, to be exported with source code
 ' Set to "*" to export the contents of all tables
 'Only used in ExportAllSource
-Private Const INCLUDE_TABLES As String = "cfgTemplateList,CTDB_PrimaryForeignKeys,MSysResources"
+Private Const INCLUDE_TABLES As String = ""
 ' This is used in ImportAllSource
 Private Const DebugOutput As Boolean = False
 'this is used in ExportAllSource
@@ -345,7 +345,7 @@ Public Sub ImportAllSource()
     
     ' NOW we may load data
     obj_path = source_path & "tables\"
-    fileName = Dir$(obj_path & "*.txt")
+    fileName = Dir$(obj_path & "*.xml")
     If Len(fileName) > 0 Then
         Debug.Print VCS_String.VCS_PadRight("Importing tables...", 24);
         obj_count = 0
