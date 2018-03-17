@@ -1,4 +1,3 @@
-Attribute VB_Name = "VCS_Relation"
 Option Compare Database
 
 Option Private Module
@@ -13,8 +12,8 @@ Public Sub VCS_ExportRelation(ByVal rel As DAO.Relation, ByVal filePath As Strin
 
     OutFile.WriteLine rel.Attributes 'RelationAttributeEnum
     OutFile.WriteLine rel.name
-    OutFile.WriteLine rel.table
-    OutFile.WriteLine rel.foreignTable
+    OutFile.WriteLine rel.Table
+    OutFile.WriteLine rel.ForeignTable
     
     Dim f As DAO.Field
     For Each f In rel.Fields
@@ -38,8 +37,8 @@ Public Sub VCS_ImportRelation(ByVal filePath As String)
     
     rel.Attributes = InFile.ReadLine
     rel.name = InFile.ReadLine
-    rel.table = InFile.ReadLine
-    rel.foreignTable = InFile.ReadLine
+    rel.Table = InFile.ReadLine
+    rel.ForeignTable = InFile.ReadLine
     
     Dim f As DAO.Field
     Do Until InFile.AtEndOfStream
@@ -65,7 +64,7 @@ Public Sub VCS_ImportRelation(ByVal filePath As String)
 ErrorHandler:
     Select Case Err.Number
         Case 3012    ' Relationship already exists
-            Debug.Print "Skipped: """ & rel.Name & """ ";
+            Debug.Print "Skipped: """ & rel.name & """ ";
             Resume Next    ' Skip it and move on
         Case Else
             Resume Next    ' Move on anyways
