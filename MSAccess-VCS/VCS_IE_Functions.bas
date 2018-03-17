@@ -27,16 +27,19 @@ Public Sub VCS_ExportObject(ByVal obj_type_num As Integer, ByVal obj_name As Str
         Dim tempFileName As String
         tempFileName = VCS_File.VCS_TempFile()
         Application.SaveAsText obj_type_num, obj_name, tempFileName
-        Open tempFileName For Append As #1
-        Write #1,
-        Close #1
+        If obj_type_num = acModule Then
+            Open tempFileName For Append As #1
+            Write #1,
+            Close #1
+        End If
         VCS_File.VCS_ConvertUcs2Utf8 tempFileName, file_path
     Else
         Application.SaveAsText obj_type_num, obj_name, file_path
-        Open file_path For Append As #1
-        Write #1,
-        Close #1
-
+        If obj_type_num = acModule Then
+            Open file_path For Append As #1
+            Write #1,
+            Close #1
+        End If
     End If
 End Sub
 

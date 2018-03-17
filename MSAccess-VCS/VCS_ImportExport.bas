@@ -230,11 +230,11 @@ Err_TableNotFound:
         For Each aRelation In CurrentDb.Relations
             ' Exclude relations from system tables and inherited (linked) relations
             ' Skip if dbRelationDontEnforce property is not set. The relationship is already in the table xml file. - sean
-            If Not (aRelation.name = "MSysNavPaneGroupsMSysNavPaneGroupToObjects" _
+            If Not ((aRelation.name = "MSysNavPaneGroupsMSysNavPaneGroupToObjects" _
                     Or aRelation.name = "MSysNavPaneGroupCategoriesMSysNavPaneGroups" _
                     Or (aRelation.Attributes And DAO.RelationAttributeEnum.dbRelationInherited) = _
                     DAO.RelationAttributeEnum.dbRelationInherited) _
-               And (aRelation.Attributes = DAO.RelationAttributeEnum.dbRelationDontEnforce) Then
+               And (aRelation.Attributes = DAO.RelationAttributeEnum.dbRelationDontEnforce)) Then
                 VCS_Relation.VCS_ExportRelation aRelation, obj_path & aRelation.name & ".txt"
                 obj_count = obj_count + 1
             End If
