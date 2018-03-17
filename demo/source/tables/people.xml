@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:od="urn:schemas-microsoft-com:officedata">
+	<xsd:schema>
+		<xsd:element name="dataroot">
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element ref="people" minOccurs="0" maxOccurs="unbounded"/>
+				</xsd:sequence>
+				<xsd:attribute name="generated" type="xsd:dateTime"/>
+			</xsd:complexType>
+		</xsd:element>
+		<xsd:element name="people">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<od:index index-name="PrimaryKey" index-key="id " primary="yes" unique="yes" clustered="no" order="asc"/>
+				</xsd:appinfo>
+			</xsd:annotation>
+			<xsd:complexType>
+				<xsd:sequence>
+					<xsd:element name="id" minOccurs="1" od:jetType="autonumber" od:sqlSType="int" od:autoUnique="yes" od:nonNullable="yes" type="xsd:int"/>
+					<xsd:element name="full_name" minOccurs="0" od:jetType="text" od:sqlSType="nvarchar">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:maxLength value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:element>
+					<xsd:element name="favorite_color" minOccurs="0" od:jetType="longinteger" od:sqlSType="int" type="xsd:int"/>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<dataroot xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<people>
+			<id>1</id>
+			<full_name>alice</full_name>
+			<favorite_color>4</favorite_color>
+		</people>
+		<people>
+			<id>2</id>
+			<full_name>bob</full_name>
+			<favorite_color>5</favorite_color>
+		</people>
+	</dataroot>
+</root>
