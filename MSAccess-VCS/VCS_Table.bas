@@ -1,4 +1,3 @@
-Attribute VB_Name = "VCS_Table"
 Option Compare Database
 
 Option Private Module
@@ -69,17 +68,17 @@ Err_LinkedTable:
 End Sub
 
 ' Save a Table Definition as SQL statement
-Public Sub VCS_ExportTableDef(ByVal TableName As String, ByVal directory As String)
+Public Sub VCS_ExportTableDef(ByVal tableName As String, ByVal directory As String)
     Dim fileName As String
-    fileName = directory & TableName & ".xml"
+    fileName = directory & tableName & ".xml"
     
     Application.ExportXML _
                ObjectType:=acExportTable, _
-               DataSource:=TableName, _
+               DataSource:=tableName, _
                SchemaTarget:=fileName
 
     'export Data Macros
-    VCS_DataMacro.VCS_ExportDataMacros TableName, directory
+    VCS_DataMacro.VCS_ExportDataMacros tableName, directory
 End Sub
 
 

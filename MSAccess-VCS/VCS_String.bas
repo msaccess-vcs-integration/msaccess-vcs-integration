@@ -1,4 +1,3 @@
-Attribute VB_Name = "VCS_String"
 Option Compare Database
 
 Option Private Module

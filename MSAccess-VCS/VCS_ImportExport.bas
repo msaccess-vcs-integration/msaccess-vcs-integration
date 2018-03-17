@@ -1,4 +1,3 @@
-Attribute VB_Name = "VCS_ImportExport"
 Option Compare Database
 
 Option Explicit
@@ -294,13 +293,13 @@ Public Sub ImportAllSource()
             DoEvents
             obj_name = Mid$(fileName, 1, InStrRev(fileName, ".") - 1)
             'Check for plain sql export/import
-                        if HandleQueriesAsSQL then
+                        If HandleQueriesAsSQL Then
                                 VCS_Query.ImportQueryFromSQL obj_name, obj_path & fileName, False
                         Else
                                 VCS_IE_Functions.VCS_ImportObject acQuery, obj_name, obj_path & fileName, VCS_File.VCS_UsingUcs2
                                 VCS_IE_Functions.VCS_ExportObject acQuery, obj_name, tempFilePath, VCS_File.VCS_UsingUcs2
                                 VCS_IE_Functions.VCS_ImportObject acQuery, obj_name, tempFilePath, VCS_File.VCS_UsingUcs2
-                        End if
+                        End If
                         obj_count = obj_count + 1
             fileName = Dir$()
         Loop
@@ -468,7 +467,7 @@ End Sub
 ' Drop all forms, reports, queries, macros, modules.
 ' execute ImportAllSource.
 Public Sub ImportProject()
-    On Error GoTo errorHandler
+    On Error GoTo ErrorHandler
 
     If MsgBox("This action will delete all existing: " & vbCrLf & _
               vbCrLf & _
@@ -500,7 +499,7 @@ Public Sub ImportProject()
         End If
     Next
         
-        ' First gather all Query Names. 
+        ' First gather all Query Names.
         ' If you delete right away, the iterator loses track and only deletes every 2nd Query
         Dim toBeDeleted As Collection
     Set toBeDeleted = New Collection
@@ -510,7 +509,7 @@ Public Sub ImportProject()
     For Each dbObject In Db.QueryDefs
         DoEvents
         If Left$(dbObject.name, 1) <> "~" Then
-                        toBeDeleted.Add dbObject.Name
+                        toBeDeleted.Add dbObject.name
         End If
     Next
         
@@ -561,7 +560,7 @@ Public Sub ImportProject()
     
     Exit Sub
 
-errorHandler:
+ErrorHandler:
     Debug.Print "VCS_ImportExport.ImportProject: Error #" & Err.Number & vbCrLf & _
          Err.Description
 End Sub
