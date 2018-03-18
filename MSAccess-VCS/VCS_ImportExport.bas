@@ -297,6 +297,8 @@ Public Sub ImportAllSource()
     Dim obj_name As String
     Dim ucs2 As Boolean
 
+    LoadCustomisations
+    
     Set FSO = CreateObject("Scripting.FileSystemObject")
 
     CloseFormsReports
