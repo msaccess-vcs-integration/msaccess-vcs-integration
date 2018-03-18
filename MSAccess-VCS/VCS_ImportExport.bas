@@ -6,22 +6,54 @@ Option Explicit
 ' data, to be exported with source code
 ' Set to "*" to export the contents of all tables
 'Only used in ExportAllSource
-Private Const INCLUDE_TABLES As String = ""
+Private INCLUDE_TABLES As String
 ' This is used in ImportAllSource
-Private Const DebugOutput As Boolean = False
+Private DebugOutput As Boolean
 'this is used in ExportAllSource
 'Causes the VCS_ code to be exported
-Private Const ArchiveMyself As Boolean = False
+Private ArchiveMyself As Boolean
 
 ' Export configuration
-Private Const ExportReports As Boolean = True
-Private Const ExportQueries As Boolean = True
-Private Const ExportForms As Boolean = True
-Private Const ExportMacros As Boolean = True
-Private Const ExportModules As Boolean = True
-Private Const ExportTables As Boolean = True
+Private ExportReports As Boolean
+Private ExportQueries As Boolean
+Private ExportForms As Boolean
+Private ExportMacros As Boolean
+Private ExportModules As Boolean
+Private ExportTables As Boolean
 'export/import all Queries as plain SQL text
-Private Const HandleQueriesAsSQL As Boolean = True
+Private HandleQueriesAsSQL As Boolean
+
+Private Function StrToBool(ByVal sStr As String, ByVal default As Boolean)
+    StrToBool = default
+
+    sStr = LCase(sStr)
+    If sStr = "yes" OR sStr = "true" Then
+        StrToBool = True
+    Else
+        If sStr = "no" OR sStr = "false" Then
+            StrToBool = False
+        End If
+    End If
+End Function
+
+Private Sub LoadCustomisations()
+    Dim sValue As String
+    Dim path As String
+
+    path = VCS_Dir.VCS_ProjectPath()
+
+    ' Load configuration items
+    ArchiveMyself = StrToBool(GetSectionEntry("Config", "ArchiveMyself", path & "vcs.cfg"), False)
+    INCLUDE_TABLES = GetSectionEntry("Config", "IncludeTables", path & "vcs.cfg")
+    DebugOutput = StrToBool(GetSectionEntry("Config", "DebugOutput", path & "vcs.cfg"), False)
+    ExportReports = StrToBool(GetSectionEntry("Config", "ExportReports", path & "vcs.cfg"), True)
+    ExportQueries = StrToBool(GetSectionEntry("Config", "ExportQueries", path & "vcs.cfg"), True)
+    ExportMacros = StrToBool(GetSectionEntry("Config", "ExportMacros", path & "vcs.cfg"), True)
+    ExportModules = StrToBool(GetSectionEntry("Config", "ExportModules", path & "vcs.cfg"), True)
+    ExportTables = StrToBool(GetSectionEntry("Config", "ExportTables", path & "vcs.cfg"), True)
+    HandleQueriesAsSQL = StrToBool(GetSectionEntry("Config", "HandleQueriesAsSQL", path & "vcs.cfg"), True)
+    
+End Sub
 
 'returns true if named module is NOT part of the VCS code
 Private Function IsNotVCS(ByVal name As String) As Boolean
@@ -36,7 +68,8 @@ Private Function IsNotVCS(ByVal name As String) As Boolean
       name <> "VCS_DataMacro" And _
       name <> "VCS_Report" And _
       name <> "VCS_Relation" And _
-      name <> "VCS_Query" Then
+      name <> "VCS_Query" And _
+      name <> "VCS_IniHandler" Then
         IsNotVCS = True
     Else
         IsNotVCS = False
@@ -62,6 +95,8 @@ Public Sub ExportAllSource()
     Dim obj_data_count As Integer
     Dim ucs2 As Boolean
 
+    LoadCustomisations
+    
     Set Db = CurrentDb
 
     CloseFormsReports
