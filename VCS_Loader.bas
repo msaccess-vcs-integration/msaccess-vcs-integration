@@ -33,11 +33,13 @@ Fin_DirCheck:
 
     Dim fileName As String
     'Use the list of files to import as the list to delete
-    fileName = Dir$(SourceDirectory & "*.bas")
+    fileName = Dir$(SourceDirectory & "VCS_*.bas")
     Do Until Len(fileName) = 0
         'strip file type from file name
         fileName = Left$(fileName, InStrRev(fileName, ".bas") - 1)
-        DoCmd.DeleteObject acModule, fileName
+        If Not fileName = "VCS_Loader" Then
+            DoCmd.DeleteObject acModule, fileName
+        End If
         fileName = Dir$()
     Loop
 
@@ -55,11 +57,13 @@ Fin_DelHandler:
 'import files from specific dir? or allow user to input their own dir?
 On Error GoTo Err_LoadHandler
 
-    fileName = Dir$(SourceDirectory & "*.bas")
+    fileName = Dir$(SourceDirectory & "VCS_*.bas")
     Do Until Len(fileName) = 0
         'strip file type from file name
         fileName = Left$(fileName, InStrRev(fileName, ".bas") - 1)
-        Application.LoadFromText acModule, fileName, SourceDirectory & fileName & ".bas"
+        If Not fileName = "VCS_Loader" Then
+            Application.LoadFromText acModule, fileName, SourceDirectory & fileName & ".bas"
+        End If
         fileName = Dir$()
     Loop
 
@@ -72,4 +76,26 @@ Err_LoadHandler:
 Fin_LoadHandler:
     Debug.Print "Done"
 
+End Sub
+
+Public Sub VCS_ImportAllSource(ctl As Object)
+    VCS_LoadStub
+    VCS_LoadAllSource
+End Sub
+
+Public Sub VCS_ImportAllModules(ctl As Object)
+    VCS_LoadStub
+    VCS_LoadModules
+End Sub
+
+Public Sub VCS_LoadStub()
+    loadVCS
+End Sub
+
+Public Sub VCS_LoadModules()
+    ImportAllModules True
+End Sub
+
+Public Sub VCS_LoadAllSource()
+    ImportAllSource True
 End Sub
