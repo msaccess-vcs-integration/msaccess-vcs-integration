@@ -21,6 +21,9 @@ Private Const ExportForms As Boolean = True
 Private Const ExportMacros As Boolean = True
 Private Const ExportModules As Boolean = True
 Private Const ExportTables As Boolean = True
+'export/import all Queries as plain SQL text
+Private Const HandleQueriesAsSQL As Boolean = True
+
 ' NOTE:  VCS_ImportAllSource and VCS_ImportAllModules are in VCS_Loader
 ' This is because you can't replace modules while running code in those
 ' modules.
@@ -67,6 +70,7 @@ Public Sub VCS_ImportAllTableData(ctl As IRibbonControl)
     ImportAllTableDataMacros
 End Sub
 
+
 'returns true if named module is NOT part of the VCS code
 Private Function IsNotVCS(ByVal name As String) As Boolean
     If name <> "VCS_ImportExport" And _
@@ -79,7 +83,8 @@ Private Function IsNotVCS(ByVal name As String) As Boolean
        name <> "VCS_Reference" And _
        name <> "VCS_DataMacro" And _
        name <> "VCS_Report" And _
-       name <> "VCS_Relation" Then
+       name <> "VCS_Relation" And _
+       name <> "VCS_Query" Then
         IsNotVCS = True
     Else
         IsNotVCS = False
@@ -330,11 +335,15 @@ Public Sub ExportAllSource()
         For Each qry In Db.QueryDefs
             DoEvents
             If Left$(qry.name, 1) <> "~" Then
-                VCS_IE_Functions.VCS_ExportObject acQuery, qry.name, obj_path & qry.name & ".bas", VCS_File.VCS_UsingUcs2
+                If HandleQueriesAsSQL Then
+                    VCS_Query.ExportQueryAsSQL qry, obj_path & qry.name & ".bas", False
+                Else
+                    VCS_IE_Functions.VCS_ExportObject acQuery, qry.name, obj_path & qry.name & ".bas", VCS_File.VCS_UsingUcs2
+                End If
                 obj_count = obj_count + 1
             End If
+            SysCmd acSysCmdUpdateMeter, obj_count
         Next
-        SysCmd acSysCmdUpdateMeter, 1
         Debug.Print VCS_String.VCS_PadRight("Sanitizing...", 15);
         VCS_IE_Functions.VCS_SanitizeTextFiles obj_path, "bas"
         Debug.Print "[" & obj_count & "]"
@@ -360,14 +369,17 @@ Public Sub ExportAllSource()
     Debug.Print "Done."
 End Sub
 
-Public Function ImportObjType(ByVal fileName As String, ByVal obj_type_label As String, ByVal obj_type_num As Integer, Optional ByVal ignoreVCS As Boolean = False) As Integer
+Public Function ImportObjType(ByVal fileName As String, ByVal obj_type_label As String, ByVal obj_type_num As Integer, Optional ByVal ignoreVCS As Boolean = False, Optional ByVal src_path As String) As Integer
     Dim obj_path As String
     Dim obj_name As String
     Dim ucs2 As Boolean
 
+    If src_path = "" Then
+        src_path = VCS_SourcePath
+    End If
     ImportObjType = 0
     obj_name = Mid$(fileName, 1, InStrRev(fileName, ".") - 1)
-    obj_path = VCS_SourcePath & obj_type_label & "\"
+    obj_path = src_path & obj_type_label & "\"
     If obj_type_label = "modules" Then
         ucs2 = False
     Else
@@ -383,7 +395,7 @@ Public Function ImportObjType(ByVal fileName As String, ByVal obj_type_label As 
     End If
 End Function
 
-Public Sub ImportObjTypeSource(ByVal obj_type As Variant, Optional ByVal ignoreVCS As Boolean = False)
+Public Sub ImportObjTypeSource(ByVal obj_type As Variant, Optional ByVal ignoreVCS As Boolean = False, Optional ByVal src_path As String)
     Dim Db As Object ' DAO.Database
     Dim ucs2 As Boolean
     Dim obj_type_split() As String
@@ -397,14 +409,17 @@ Public Sub ImportObjTypeSource(ByVal obj_type As Variant, Optional ByVal ignoreV
 
     Set Db = CurrentDb
     
+    If src_path = "" Then
+        src_path = VCS_SourcePath
+    End If
     obj_type_split = Split(obj_type, "|")
     obj_type_label = obj_type_split(0)
     obj_type_num = Val(obj_type_split(1))
-    obj_path = VCS_SourcePath & obj_type_label & "\"
+    obj_path = src_path & obj_type_label & "\"
 
     If (obj_type_label = "modules") Then
-        If Not VCS_Reference.VCS_ImportReferences(VCS_SourcePath) Then
-            Debug.Print "Info: no references file in " & VCS_SourcePath
+        If Not VCS_Reference.VCS_ImportReferences(src_path) Then
+            Debug.Print "Info: no references file in " & src_path
             Debug.Print
         End If
     End If
@@ -416,7 +431,7 @@ Public Sub ImportObjTypeSource(ByVal obj_type As Variant, Optional ByVal ignoreV
         obj_count = 0
         Do Until Len(fileName) = 0
             ' DoEvents no good idea!
-            obj_count = obj_count + ImportObjType(fileName, obj_type_label, obj_type_num, ignoreVCS)
+            obj_count = obj_count + ImportObjType(fileName, obj_type_label, obj_type_num, ignoreVCS, src_path)
             fileName = Dir$()
             SysCmd acSysCmdUpdateMeter, obj_count
         Loop
@@ -431,8 +446,11 @@ Public Sub ImportAllModules(Optional ByVal ignoreVCS As Boolean = False)
     ImportObjTypeSource "modules|" & acModule, ignoreVCS
 End Sub
 
-Public Sub ImportAllForms(Optional ByVal ignoreVCS As Boolean = False)
-    ImportObjTypeSource "forms|" & acForm, ignoreVCS
+Public Sub ImportAllForms(Optional ByVal ignoreVCS As Boolean = False, Optional ByVal src_path As String)
+    If src_path = "" Then
+        src_path = VCS_SourcePath
+    End If
+    ImportObjTypeSource "forms|" & acForm, ignoreVCS, src_path
 End Sub
 
 Public Sub ImportAllReports(Optional ByVal ignoreVCS As Boolean = False)
@@ -443,11 +461,14 @@ Public Sub ImportAllMacros(Optional ByVal ignoreVCS As Boolean = False)
     ImportObjTypeSource "macros|" & acMacro, ignoreVCS
 End Sub
 
-Public Sub ImportTableDef(ByVal fileName As String)
+Public Sub ImportTableDef(ByVal fileName As String, Optional ByVal src_path As String)
     Dim obj_name As String
     Dim obj_path As String
-    
-    obj_path = VCS_SourcePath & "tbldef\"
+
+    If src_path = "" Then
+        src_path = VCS_SourcePath
+    End If
+    obj_path = src_path & "tbldef\"
     obj_name = Mid$(fileName, 1, InStrRev(fileName, ".") - 1)
     If DebugOutput Then
         Debug.Print "  [debug] table " & obj_name;
@@ -456,13 +477,16 @@ Public Sub ImportTableDef(ByVal fileName As String)
     VCS_Table.VCS_ImportTableDef CStr(obj_name), obj_path
 End Sub
 
-Public Sub ImportAllTableDefs()
+Public Sub ImportAllTableDefs(Optional ByVal src_path As String)
     Dim obj_path As String
     Dim fileName As String
     Dim obj_count As Integer
     Dim obj_name As String
 
-    obj_path = VCS_SourcePath & "tbldef\"
+    If src_path = "" Then
+        src_path = VCS_SourcePath
+    End If
+    obj_path = src_path & "tbldef\"
     fileName = Dir$(obj_path & "*.xml")
     If Len(fileName) > 0 Then
         Debug.Print VCS_String.VCS_PadRight("Importing tabledefs...", 24);
@@ -474,7 +498,7 @@ Public Sub ImportAllTableDefs()
                     Debug.Print
                 End If
             End If
-            ImportTableDef fileName
+            ImportTableDef fileName, src_path
             obj_count = obj_count + 1
             fileName = Dir$()
             SysCmd acSysCmdUpdateMeter, obj_count
@@ -508,12 +532,15 @@ Public Sub ImportAllTableDefs()
     End If
 End Sub
 
-Public Sub ImportTableData(ByVal fileName As String)
+Public Sub ImportTableData(ByVal fileName As String, Optional ByVal src_path)
     Dim appendOnly As Boolean
     Dim obj_name As String
     Dim obj_path As String
     
-    obj_path = VCS_SourcePath & "tables\"
+    If src_path = "" Then
+        src_path = VCS_SourcePath
+    End If
+    obj_path = src_path & "tables\"
     appendOnly = False
     obj_name = Mid$(fileName, 1, InStrRev(fileName, ".") - 1)
     If InStrRev(obj_name, ".") Then
@@ -525,13 +552,16 @@ Public Sub ImportTableData(ByVal fileName As String)
     VCS_Table.VCS_ImportTableData CStr(obj_name), obj_path & fileName, appendOnly
 End Sub
 
-Public Sub ImportAllTableData()
+Public Sub ImportAllTableData(Optional ByVal src_path As String)
     Dim obj_path As String
     Dim fileName As String
     Dim obj_count As Integer
     Dim obj_name As String
 
-    obj_path = VCS_SourcePath & "tables\"
+    If src_path = "" Then
+        src_path = VCS_SourcePath
+    End If
+    obj_path = src_path & "tables\"
     fileName = Dir$(obj_path & "*.xml")
     If Len(fileName) > 0 Then
         Debug.Print VCS_String.VCS_PadRight("Importing tables...", 24);
@@ -539,7 +569,7 @@ Public Sub ImportAllTableData()
         obj_count = 0
         Do Until Len(fileName) = 0
             DoEvents
-            ImportTableData fileName
+            ImportTableData fileName, src_path
             obj_count = obj_count + 1
             fileName = Dir$()
             SysCmd acSysCmdUpdateMeter, obj_count
@@ -623,9 +653,14 @@ Public Sub ImportAllSource(Optional ByVal ignoreVCS As Boolean = False)
         Do Until Len(fileName) = 0
             DoEvents
             obj_name = Mid$(fileName, 1, InStrRev(fileName, ".") - 1)
-            VCS_IE_Functions.VCS_ImportObject acQuery, obj_name, obj_path & fileName, VCS_File.VCS_UsingUcs2
-            VCS_IE_Functions.VCS_ExportObject acQuery, obj_name, tempFilePath, VCS_File.VCS_UsingUcs2
-            VCS_IE_Functions.VCS_ImportObject acQuery, obj_name, tempFilePath, VCS_File.VCS_UsingUcs2
+            'Check for plain sql export/import
+            if HandleQueriesAsSQL then
+                VCS_Query.ImportQueryFromSQL obj_name, obj_path & fileName, False
+            Else
+                VCS_IE_Functions.VCS_ImportObject acQuery, obj_name, obj_path & fileName, VCS_File.VCS_UsingUcs2
+                VCS_IE_Functions.VCS_ExportObject acQuery, obj_name, tempFilePath, VCS_File.VCS_UsingUcs2
+                VCS_IE_Functions.VCS_ImportObject acQuery, obj_name, tempFilePath, VCS_File.VCS_UsingUcs2
+            End if          
             obj_count = obj_count + 1
             fileName = Dir$()
             SysCmd acSysCmdUpdateMeter, obj_count
@@ -725,15 +760,26 @@ Public Sub ImportProject()
             CurrentDb.Relations.Delete (rel.name)
         End If
     Next
-
+        
+        ' First gather all Query Names. 
+        ' If you delete right away, the iterator loses track and only deletes every 2nd Query
+        Dim toBeDeleted As Collection
+    Set toBeDeleted = New Collection
+    Dim qryName As Variant
+    
     Dim dbObject As Object
     For Each dbObject In Db.QueryDefs
         DoEvents
         If Left$(dbObject.name, 1) <> "~" Then
-            '            Debug.Print dbObject.Name
-            Db.QueryDefs.Delete dbObject.name
+            toBeDeleted.Add dbObject.Name
         End If
     Next
+        
+        For Each qryName In toBeDeleted
+        Db.QueryDefs.Delete qryName
+    Next
+        
+        Set toBeDeleted = Nothing
     
     Dim td As DAO.TableDef
     For Each td In CurrentDb.TableDefs
@@ -788,7 +834,7 @@ End Sub
 '-----------------------------------------------------------'
 
 ' Close all open forms.
-Private Sub CloseFormsReports()
+Public Sub CloseFormsReports()
     On Error GoTo ErrorHandler
     Do While Forms.Count > 0
         DoCmd.Close acForm, Forms(0).name

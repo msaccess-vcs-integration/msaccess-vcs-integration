@@ -74,6 +74,7 @@ Err_LoadHandler:
     Resume Next
 
 Fin_LoadHandler:
+    VCS_Bootstrap
     Debug.Print "Done"
 
 End Sub
@@ -98,4 +99,17 @@ End Sub
 
 Public Sub VCS_LoadAllSource()
     ImportAllSource True
+End Sub
+
+Private Sub VCS_Bootstrap()
+    VCS_Reference.VCS_ImportReferences(CurrentProject.Path & "\MSAccess-VCS\")
+    VCS_Bootstrap_Tables
+End Sub
+
+Private Sub VCS_Bootstrap_Tables()
+    CloseFormsReports
+    ImportAllTableDefs(CurrentProject.Path & "\MSAccess-VCS\")
+    ImportAllTableData(CurrentProject.Path & "\MSAccess-VCS\")
+    ImportAllForms ignoreVCS:=True, src_path:=CurrentProject.Path & "\MSAccess-VCS\"
+    CurrentDB.Properties.Append CurrentDB.CreateProperty("CustomRibbonID", dbText, "VCS Tab")
 End Sub
