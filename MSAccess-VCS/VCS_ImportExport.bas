@@ -136,8 +136,6 @@ Public Sub ExportObjTypeSource(ByVal obj_type As Variant)
     Dim obj_path As String
     Dim obj_count As Integer
 
-    LoadCustomisations
-    
     Set Db = CurrentDb
     
     obj_type_split = Split(obj_type, "|")
@@ -353,6 +351,8 @@ Public Sub ExportAllSource()
 
     Set Db = CurrentDb
 
+    LoadCustomisations
+    
     CloseFormsReports
     'InitVCS_UsingUcs2
 
@@ -663,6 +663,8 @@ Public Sub ImportAllSource(Optional ByVal ignoreVCS As Boolean = False)
 
     Set FSO = CreateObject("Scripting.FileSystemObject")
 
+    LoadCustomisations
+    
     CloseFormsReports
     'InitVCS_UsingUcs2
 
