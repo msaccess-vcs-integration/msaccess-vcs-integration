@@ -95,14 +95,14 @@ Private Function TableExists(ByVal TName As String) As Boolean
     
     Const NAME_NOT_IN_COLLECTION As Integer = 3265
     
-     ' Assume the table or query does not exist.
+    ' Assume the table or query does not exist.
     Found = False
     Set Db = CurrentDb()
     
-     ' Trap for any errors.
+    ' Trap for any errors.
     On Error Resume Next
      
-     ' See if the name is in the Tables collection.
+    ' See if the name is in the Tables collection.
     Test = Db.TableDefs(TName).name
     If Err.Number <> NAME_NOT_IN_COLLECTION Then Found = True
     
@@ -159,6 +159,11 @@ Public Sub VCS_ExportTableData(ByVal tbl_name As String, ByVal obj_path As Strin
         Debug.Print "Error: Table " & tbl_name & " missing"
         Exit Sub
     End If
+    If CurrentDb.TableDefs(tbl_name).RecordCount = 0 Then
+        Debug.Print "Info: Table " & tbl_name & " has no records"
+        Exit Sub
+    End If
+
     fileName = obj_path & tbl_name & ".xml"
     
     Application.ExportXML ObjectType:=acExportTable, DataSource:=tbl_name, DataTarget:=fileName, OtherFlags:=acEmbedSchema
@@ -254,20 +259,33 @@ End Sub
 Public Sub VCS_ImportTableDef(ByVal tblName As String, ByVal directory As String)
     Dim filePath As String
     Dim tbl As Object
+    Dim prefix As String
     
     ' Drop table first.
-    On Error Resume Next
+    On Error GoTo Err_MissingTable
     Set tbl = CurrentDb.TableDefs(tblName)
+    On Error GoTo 0
+
     If Not tbl Is Nothing Then
         CurrentDb.Execute "Drop Table [" & tblName & "]"
     End If
     filePath = directory & tblName & ".xml"
     Application.ImportXML DataSource:=filePath, ImportOptions:=acStructureOnly
-
+    
+    prefix = Left(tblName, 2)
+    If prefix = "t_" Or prefix = "u_" Then
+        Application.SetHiddenAttribute acTable, tblName, True
+    End If
+    
+    Exit Sub
+    
+Err_MissingTable:
+    ' Nothing to do here
+    Resume Next
 End Sub
 
 ' Import the lookup table `tblName` from `source\tables`.
-Public Sub VCS_ImportTableData(ByVal tblName As String, ByVal obj_path As String)
+Public Sub VCS_ImportTableData(ByVal tblName As String, ByVal obj_path As String, Optional ByVal appendOnly As Boolean = False)
     Dim Db As Object ' DAO.Database
     Dim rs As Object ' DAO.Recordset
     Dim fieldObj As Object ' DAO.Field
@@ -280,5 +298,12 @@ Public Sub VCS_ImportTableData(ByVal tblName As String, ByVal obj_path As String
     Db.Execute "DELETE FROM [" & tblName & "];"
     
     Application.ImportXML DataSource:=obj_path & tblName & ".xml", ImportOptions:=acAppendData
+
+    If Not (appendOnly) Then
+        ' Don't delete existing data
+        Db.Execute "DELETE FROM [" & tblName & "];"
+    End If
+    
+    Application.ImportXML DataSource:=obj_path, ImportOptions:=acAppendData
 
 End Sub

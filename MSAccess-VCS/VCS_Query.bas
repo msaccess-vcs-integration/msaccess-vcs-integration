@@ -1,3 +1,4 @@
+Attribute VB_Name = "VCS_Query"
 Option Compare Database
 Option Explicit
 
@@ -19,15 +20,15 @@ End Sub
 
 Private Sub writeTextToFile(ByVal text As String, ByVal file_path As String)
     
-    Dim FSO As Object
-    Set FSO = CreateObject("Scripting.FileSystemObject")
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
     Dim oFile As Object
-    Set oFile = FSO.CreateTextFile(file_path)
+    Set oFile = fso.CreateTextFile(file_path)
 
     oFile.WriteLine text
     oFile.Close
     
-    Set FSO = Nothing
+    Set fso = Nothing
     Set oFile = Nothing
 
 End Sub
@@ -35,10 +36,10 @@ End Sub
 Private Function readFromTextFile(ByVal file_path As String) As String
     
     Dim textRead As String
-    Dim FSO As Object
-    Set FSO = CreateObject("Scripting.FileSystemObject")
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
     Dim oFile As Object
-    Set oFile = FSO.OpenTextFile(file_path, ForReading)
+    Set oFile = fso.OpenTextFile(file_path, ForReading)
     
     
     Do While Not oFile.AtEndOfStream
@@ -51,7 +52,7 @@ Private Function readFromTextFile(ByVal file_path As String) As String
     
     oFile.Close
     
-    Set FSO = Nothing
+    Set fso = Nothing
     Set oFile = Nothing
 
 End Function
@@ -72,9 +73,9 @@ Public Sub ImportQueryFromSQL(ByVal obj_name As String, ByVal file_path As Strin
         VCS_File.VCS_ConvertUtf8Ucs2 file_path, tempFileName
         CurrentDb.CreateQueryDef obj_name, readFromTextFile(file_path)
         
-        Dim FSO As Object
-        Set FSO = CreateObject("Scripting.FileSystemObject")
-        FSO.DeleteFile tempFileName
+        Dim fso As Object
+        Set fso = CreateObject("Scripting.FileSystemObject")
+        fso.DeleteFile tempFileName
     Else
         On Error Resume Next
         CurrentDb.QueryDefs.Delete (obj_name)
