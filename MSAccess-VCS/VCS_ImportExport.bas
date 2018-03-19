@@ -37,7 +37,7 @@ Private Function StrToBool(ByVal sStr As String, ByVal default As Boolean)
     End If
 End Function
 
-Private Sub LoadCustomisations()
+Public Sub LoadCustomisations()
     Dim sValue As String
     Dim path As String
 
@@ -60,44 +60,56 @@ End Sub
 ' This is because you can't replace modules while running code in those
 ' modules.
 Public Sub VCS_ExportAllSource(ctl As IRibbonControl)
+    LoadCustomisations
     ExportAllSource
 End Sub
 Public Sub VCS_ExportAllModules(ctl As IRibbonControl)
+    LoadCustomisations
     ExportAllModules
 End Sub
 Public Sub VCS_ExportAllTableDefs(ctl As IRibbonControl)
+    LoadCustomisations
     ExportAllTables doTableDefs:=True, doTableData:=False
 End Sub
 Public Sub VCS_ImportAllForms(ctl As IRibbonControl)
+    LoadCustomisations
     CloseFormsReports
     ImportAllForms
 End Sub
 Public Sub VCS_ExportAllForms(ctl As IRibbonControl)
     DoCmd.Hourglass True
+    LoadCustomisations
     ExportAllForms
     DoCmd.Hourglass False
 End Sub
 Public Sub VCS_ImportAllReports(ctl As IRibbonControl)
+    LoadCustomisations
     CloseFormsReports
     ImportAllReports
 End Sub
 Public Sub VCS_ExportAllReports(ctl As IRibbonControl)
+    LoadCustomisations
     ExportAllReports
 End Sub
 Public Sub VCS_ImportAllMacros(ctl As IRibbonControl)
+    LoadCustomisations
     ImportAllMacros
 End Sub
 Public Sub VCS_ExportAllMacros(ctl As IRibbonControl)
+    LoadCustomisations
     ExportAllMacros
 End Sub
 Public Sub VCS_ImportAllTableDefs(ctl As IRibbonControl)
+    LoadCustomisations
     CloseFormsReports
     ImportAllTableDefs
 End Sub
 Public Sub VCS_ExportAllTableData(ctl As IRibbonControl)
+    LoadCustomisations
     ExportAllTables doTableDefs:=False, doTableData:=True
 End Sub
 Public Sub VCS_ImportAllTableData(ctl As IRibbonControl)
+    LoadCustomisations
     ImportAllTableData
     ImportAllTableDataMacros
 End Sub

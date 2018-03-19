@@ -94,15 +94,18 @@ Public Sub VCS_LoadStub()
 End Sub
 
 Public Sub VCS_LoadModules()
+    LoadCustomisations
     ImportAllModules True
 End Sub
 
 Public Sub VCS_LoadAllSource()
+    LoadCustomisations
     ImportAllSource True
 End Sub
 
 Private Sub VCS_Bootstrap()
     VCS_Reference.VCS_ImportReferences(CurrentProject.Path & "\MSAccess-VCS\")
+    LoadCustomisations
     VCS_Bootstrap_Tables
 End Sub
 
