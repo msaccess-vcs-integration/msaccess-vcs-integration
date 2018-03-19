@@ -12,12 +12,18 @@
 <xsd:annotation>
 <xsd:appinfo>
 <od:index index-name="PrimaryKey" index-key="ID " primary="yes" unique="yes" clustered="no" order="asc"/>
+<od:tableProperty name="Orientation" type="2" value="0"/>
 </xsd:appinfo>
 </xsd:annotation>
 <xsd:complexType>
 <xsd:sequence>
 <xsd:element name="ID" minOccurs="1" od:jetType="autonumber" od:sqlSType="int" od:autoUnique="yes" od:nonNullable="yes" type="xsd:int"/>
 <xsd:element name="RibbonName" minOccurs="0" od:jetType="text" od:sqlSType="nvarchar">
+<xsd:annotation>
+<xsd:appinfo>
+<od:fieldProperty name="Required" type="1" value="0"/>
+</xsd:appinfo>
+</xsd:annotation>
 <xsd:simpleType>
 <xsd:restriction base="xsd:string">
 <xsd:maxLength value="255"/>
@@ -25,6 +31,11 @@
 </xsd:simpleType>
 </xsd:element>
 <xsd:element name="RibbonXML" minOccurs="0" od:jetType="memo" od:sqlSType="ntext">
+<xsd:annotation>
+<xsd:appinfo>
+<od:fieldProperty name="Required" type="1" value="0"/>
+</xsd:appinfo>
+</xsd:annotation>
 <xsd:simpleType>
 <xsd:restriction base="xsd:string">
 <xsd:maxLength value="536870910"/>
