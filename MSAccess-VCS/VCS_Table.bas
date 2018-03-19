@@ -1,4 +1,3 @@
-Attribute VB_Name = "VCS_Table"
 Option Compare Database
 
 Option Private Module
@@ -69,17 +68,17 @@ Err_LinkedTable:
 End Sub
 
 ' Save a Table Definition as SQL statement
-Public Sub VCS_ExportTableDef(ByVal TableName As String, ByVal directory As String)
+Public Sub VCS_ExportTableDef(ByVal tableName As String, ByVal directory As String)
     Dim fileName As String
-    fileName = directory & TableName & ".xml"
+    fileName = directory & tableName & ".xml"
     
     Application.ExportXML _
-    ObjectType:=acExportTable, _
-    DataSource:=TableName, _
-    SchemaTarget:=fileName
-    
-    'exort Data Macros
-    VCS_DataMacro.VCS_ExportDataMacros TableName, directory
+               ObjectType:=acExportTable, _
+               DataSource:=tableName, _
+               SchemaTarget:=fileName, _
+               OtherFlags:=acExportAllTableAndFieldProperties
+    'export Data Macros
+    VCS_DataMacro.VCS_ExportDataMacros tableName, directory
 End Sub
 
 
@@ -96,14 +95,14 @@ Private Function TableExists(ByVal TName As String) As Boolean
     
     Const NAME_NOT_IN_COLLECTION As Integer = 3265
     
-     ' Assume the table or query does not exist.
+    ' Assume the table or query does not exist.
     Found = False
     Set Db = CurrentDb()
     
-     ' Trap for any errors.
+    ' Trap for any errors.
     On Error Resume Next
      
-     ' See if the name is in the Tables collection.
+    ' See if the name is in the Tables collection.
     Test = Db.TableDefs(TName).name
     If Err.Number <> NAME_NOT_IN_COLLECTION Then Found = True
     
@@ -151,65 +150,36 @@ Public Sub VCS_ExportTableData(ByVal tbl_name As String, ByVal obj_path As Strin
     Dim rs As DAO.Recordset ' DAO.Recordset
     Dim fieldObj As Object ' DAO.Field
     Dim c As Long, Value As Variant
+    Dim oXMLFile As Object
+    Dim xmlElement As Object
+    Dim fileName As String
     
     ' Checks first
     If Not TableExists(tbl_name) Then
         Debug.Print "Error: Table " & tbl_name & " missing"
         Exit Sub
     End If
-    
-    Set rs = CurrentDb.OpenRecordset(TableExportSql(tbl_name))
-    If rs.RecordCount = 0 Then
-        'why is this an error? Debug.Print "Error: Table " & tbl_name & "  empty"
-        rs.Close
+    If CurrentDb.TableDefs(tbl_name).RecordCount = 0 Then
+        Debug.Print "Info: Table " & tbl_name & " has no records"
         Exit Sub
     End If
 
-    Set FSO = CreateObject("Scripting.FileSystemObject")
-    ' open file for writing with Create=True, Unicode=True (USC-2 Little Endian format)
-    VCS_Dir.VCS_MkDirIfNotExist obj_path
-    Dim tempFileName As String
-    tempFileName = VCS_File.VCS_TempFile()
+    fileName = obj_path & tbl_name & ".xml"
+    
+    Application.ExportXML ObjectType:=acExportTable, DataSource:=tbl_name, DataTarget:=fileName, OtherFlags:=acEmbedSchema
+    
+    ' Remove the generated date field to make diff easier.
+    Set oXMLFile = CreateObject("Microsoft.XMLDOM")
+    oXMLFile.async = False
+    oXMLFile.validateOnParse = False
+    oXMLFile.Load (fileName)
+    
+    Set xmlElement = oXMLFile.SelectSingleNode("/root/dataroot")
+    If Not xmlElement Is Nothing Then
+        xmlElement.removeAttribute ("generated")
+        oXMLFile.Save (fileName)
+    End If
 
-    Set OutFile = FSO.CreateTextFile(tempFileName, overwrite:=True, Unicode:=True)
-
-    c = 0
-    For Each fieldObj In rs.Fields
-        If c <> 0 Then OutFile.Write vbTab
-        c = c + 1
-        OutFile.Write fieldObj.name
-    Next
-    OutFile.Write vbCrLf
-
-    rs.MoveFirst
-    Do Until rs.EOF
-        c = 0
-        For Each fieldObj In rs.Fields
-            DoEvents
-            If c <> 0 Then OutFile.Write vbTab
-            c = c + 1
-            Value = rs(fieldObj.name)
-            If IsNull(Value) Then
-                Value = vbNullString
-            ElseIf VarType(Value) = vbBoolean Then
-                Value = CInt(Value)
-            Else
-                Value = Replace(Value, "\", "\\")
-                Value = Replace(Value, vbCrLf, "\n")
-                Value = Replace(Value, vbCr, "\n")
-                Value = Replace(Value, vbLf, "\n")
-                Value = Replace(Value, vbTab, "\t")
-            End If
-            OutFile.Write Value
-        Next
-        OutFile.Write vbCrLf
-        rs.MoveNext
-    Loop
-    rs.Close
-    OutFile.Close
-
-    VCS_File.VCS_ConvertUcs2Utf8 tempFileName, obj_path & tbl_name & ".txt"
-    FSO.DeleteFile tempFileName
 End Sub
 
 Public Sub VCS_ImportLinkedTable(ByVal tblName As String, ByRef obj_path As String)
@@ -288,57 +258,48 @@ End Sub
 ' Import Table Definition
 Public Sub VCS_ImportTableDef(ByVal tblName As String, ByVal directory As String)
     Dim filePath As String
+    Dim tbl As Object
+    Dim prefix As String
     
+    ' Drop table first.
+    On Error GoTo Err_MissingTable
+    Set tbl = CurrentDb.TableDefs(tblName)
+    On Error GoTo 0
+
+    If Not tbl Is Nothing Then
+        CurrentDb.Execute "Drop Table [" & tblName & "]"
+    End If
     filePath = directory & tblName & ".xml"
     Application.ImportXML DataSource:=filePath, ImportOptions:=acStructureOnly
-
+    
+    prefix = Left(tblName, 2)
+    If prefix = "t_" Or prefix = "u_" Then
+        Application.SetHiddenAttribute acTable, tblName, True
+    End If
+    
+    Exit Sub
+    
+Err_MissingTable:
+    ' Nothing to do here
+    Resume Next
 End Sub
 
 ' Import the lookup table `tblName` from `source\tables`.
-Public Sub VCS_ImportTableData(ByVal tblName As String, ByVal obj_path As String)
+Public Sub VCS_ImportTableData(ByVal tblName As String, ByVal obj_path As String, Optional ByVal appendOnly As Boolean = False)
     Dim Db As Object ' DAO.Database
     Dim rs As Object ' DAO.Recordset
     Dim fieldObj As Object ' DAO.Field
     Dim FSO As Object
     Dim InFile As Object
     Dim c As Long, buf As String, Values() As String, Value As Variant
-
-    Set FSO = CreateObject("Scripting.FileSystemObject")
     
-    Dim tempFileName As String
-    tempFileName = VCS_File.VCS_TempFile()
-    VCS_File.VCS_ConvertUtf8Ucs2 obj_path & tblName & ".txt", tempFileName
-    ' open file for reading with Create=False, Unicode=True (USC-2 Little Endian format)
-    Set InFile = FSO.OpenTextFile(tempFileName, iomode:=ForReading, create:=False, Format:=TristateTrue)
     Set Db = CurrentDb
+    
+    If Not (appendOnly) Then
+        ' Don't delete existing data
+        Db.Execute "DELETE FROM [" & tblName & "];"
+    End If
+    
+    Application.ImportXML DataSource:=obj_path, ImportOptions:=acAppendData
 
-    Db.Execute "DELETE FROM [" & tblName & "]"
-    Set rs = Db.OpenRecordset(tblName)
-    buf = InFile.ReadLine()
-    Do Until InFile.AtEndOfStream
-        buf = InFile.ReadLine()
-        If Len(Trim$(buf)) > 0 Then
-            Values = Split(buf, vbTab)
-            c = 0
-            rs.AddNew
-            For Each fieldObj In rs.Fields
-                DoEvents
-                Value = Values(c)
-                If Len(Value) = 0 Then
-                    Value = Null
-                Else
-                    Value = Replace(Value, "\t", vbTab)
-                    Value = Replace(Value, "\n", vbCrLf)
-                    Value = Replace(Value, "\\", "\")
-                End If
-                rs(fieldObj.name) = Value
-                c = c + 1
-            Next
-            rs.Update
-        End If
-    Loop
-
-    rs.Close
-    InFile.Close
-    FSO.DeleteFile tempFileName
 End Sub

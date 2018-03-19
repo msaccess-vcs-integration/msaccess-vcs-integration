@@ -1,4 +1,4 @@
-4352
+2
 RelationTbl1RelationTbl2
 RelationTbl1
 RelationTbl2
