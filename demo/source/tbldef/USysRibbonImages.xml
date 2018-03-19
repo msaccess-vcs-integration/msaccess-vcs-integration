@@ -12,11 +12,21 @@
 <xsd:annotation>
 <xsd:appinfo>
 <od:index index-name="PrimaryKey" index-key="ControlId " primary="yes" unique="yes" clustered="no" order="asc"/>
+<od:tableProperty name="Orientation" type="2" value="0"/>
+<od:tableProperty name="GUID" type="9" value="y+4ATSPHFku3UDrlCV0tgQ==
+"/>
 </xsd:appinfo>
 </xsd:annotation>
 <xsd:complexType>
 <xsd:sequence>
 <xsd:element name="ControlId" minOccurs="1" od:jetType="text" od:sqlSType="nvarchar" od:nonNullable="yes">
+<xsd:annotation>
+<xsd:appinfo>
+<od:fieldProperty name="Required" type="1" value="1"/>
+<od:fieldProperty name="GUID" type="9" value="nzEdXYBHokGOeSnZNnqatg==
+"/>
+</xsd:appinfo>
+</xsd:annotation>
 <xsd:simpleType>
 <xsd:restriction base="xsd:string">
 <xsd:maxLength value="255"/>
@@ -24,6 +34,13 @@
 </xsd:simpleType>
 </xsd:element>
 <xsd:element name="Images" minOccurs="0" od:jetType="complex" od:jetComplexType="MSysComplexType_Attachment" maxOccurs="unbounded">
+<xsd:annotation>
+<xsd:appinfo>
+<od:fieldProperty name="Required" type="1" value="0"/>
+<od:fieldProperty name="GUID" type="9" value="edn+hUOTZk6JtpN/Ev5tIQ==
+"/>
+</xsd:appinfo>
+</xsd:annotation>
 <xsd:complexType>
 <xsd:sequence>
 <xsd:element name="FileData" minOccurs="0" od:jetType="oleobject" od:sqlSType="image">
@@ -60,6 +77,13 @@
 </xsd:complexType>
 </xsd:element>
 <xsd:element name="Description" minOccurs="0" od:jetType="memo" od:sqlSType="ntext">
+<xsd:annotation>
+<xsd:appinfo>
+<od:fieldProperty name="Required" type="1" value="0"/>
+<od:fieldProperty name="GUID" type="9" value="K+/pzQ/250GEIN6WRUGJwQ==
+"/>
+</xsd:appinfo>
+</xsd:annotation>
 <xsd:simpleType>
 <xsd:restriction base="xsd:string">
 <xsd:maxLength value="536870910"/>
