@@ -455,13 +455,9 @@ Public Sub ImportObjTypeSource(ByVal obj_type As Variant, Optional ByVal ignoreV
     Dim obj_name As String
     Dim obj_count As Integer
     Dim fileName As String
-    Dim obj_name As String
-    Dim ucs2 As Boolean
 
     LoadCustomisations
     
-    Set FSO = CreateObject("Scripting.FileSystemObject")
-
     CloseFormsReports
     'InitVCS_UsingUcs2
 
