@@ -114,5 +114,7 @@ Private Sub VCS_Bootstrap_Tables()
     ImportAllTableDefs(CurrentProject.Path & "\MSAccess-VCS\")
     ImportAllTableData(CurrentProject.Path & "\MSAccess-VCS\")
     ImportAllForms ignoreVCS:=True, src_path:=CurrentProject.Path & "\MSAccess-VCS\"
+    On Error Resume Next
+    CurrentDb.Properties.Delete "CustomRibbonID"
     CurrentDB.Properties.Append CurrentDB.CreateProperty("CustomRibbonID", dbText, "VCS Tab")
 End Sub
