@@ -295,10 +295,6 @@ Public Sub VCS_ImportTableData(ByVal tblName As String, ByVal obj_path As String
     
     Set Db = CurrentDb
     
-    Db.Execute "DELETE FROM [" & tblName & "];"
-    
-    Application.ImportXML DataSource:=obj_path & tblName & ".xml", ImportOptions:=acAppendData
-
     If Not (appendOnly) Then
         ' Don't delete existing data
         Db.Execute "DELETE FROM [" & tblName & "];"
