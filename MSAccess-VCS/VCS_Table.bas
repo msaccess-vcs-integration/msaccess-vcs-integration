@@ -160,6 +160,11 @@ Public Sub VCS_ExportTableData(ByVal tbl_name As String, ByVal obj_path As Strin
         Debug.Print "Error: Table " & tbl_name & " missing"
         Exit Sub
     End If
+    If CurrentDb.TableDefs(tbl_name).RecordCount = 0 Then
+        Debug.Print "Info: Table " & tbl_name & " has no records"
+        Exit Sub
+    End If
+
     fileName = obj_path & tbl_name & ".xml"
     
     Application.ExportXML ObjectType:=acExportTable, DataSource:=tbl_name, DataTarget:=fileName, OtherFlags:=acEmbedSchema
