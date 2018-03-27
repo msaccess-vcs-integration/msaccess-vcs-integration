@@ -77,6 +77,8 @@ Public Sub ImportQueryFromSQL(ByVal obj_name As String, ByVal file_path As Strin
         Set fso = CreateObject("Scripting.FileSystemObject")
         fso.DeleteFile tempFileName
     Else
+		' msacces 97 won't allow for creation when the query exists
+		CurrentDb.QueryDefs.Delete obj_name								   
         CurrentDb.CreateQueryDef obj_name, readFromTextFile(file_path)
     End If
 

@@ -21,6 +21,7 @@ Private Const ExportForms As Boolean = True
 Private Const ExportMacros As Boolean = True
 Private Const ExportModules As Boolean = True
 Private Const ExportTables As Boolean = True
+Private Const ImportLinkedTables As Boolean = False
 'export/import all Queries as plain SQL text
 Private Const HandleQueriesAsSQL As Boolean = True
 
@@ -324,26 +325,29 @@ Public Sub ImportAllSource()
         Debug.Print "[" & obj_count & "]"
     End If
     
-    
-    ' restore linked tables - we must have access to the remote store to import these!
-    fileName = Dir$(obj_path & "*.LNKD")
-    If Len(fileName) > 0 Then
-        Debug.Print VCS_String.VCS_PadRight("Importing Linked tabledefs...", 24);
-        obj_count = 0
-        Do Until Len(fileName) = 0
-            obj_name = Mid$(fileName, 1, InStrRev(fileName, ".") - 1)
-            If DebugOutput Then
-                If obj_count = 0 Then
+    If ImportLinkedTables Then
+        ' restore linked tables - we must have access to the remote store to import these!
+        fileName = Dir$(obj_path & "*.LNKD")
+        If Len(fileName) > 0 Then
+            Debug.Print VCS_String.VCS_PadRight("Importing Linked tabledefs...", 24);
+            obj_count = 0
+            Do Until Len(fileName) = 0
+                obj_name = Mid$(fileName, 1, InStrRev(fileName, ".") - 1)
+                If DebugOutput Then
+                    If obj_count = 0 Then
+                        Debug.Print
+                    End If
+                    Debug.Print "  [debug] table " & obj_name;
                     Debug.Print
                 End If
-                Debug.Print "  [debug] table " & obj_name;
-                Debug.Print
-            End If
-            VCS_Table.VCS_ImportLinkedTable CStr(obj_name), obj_path
-            obj_count = obj_count + 1
-            fileName = Dir$()
-        Loop
-        Debug.Print "[" & obj_count & "]"
+                VCS_Table.VCS_ImportLinkedTable CStr(obj_name), obj_path
+                obj_count = obj_count + 1
+                fileName = Dir$()
+            Loop
+            Debug.Print "[" & obj_count & "]"
+        End If
+    Else
+        Debug.Print VCS_String.VCS_PadRight("SKIP Linked tabledefs...", 24);
     End If
     
     
