@@ -3,6 +3,11 @@ Change log
 
 This change log isn't being kept up to date any more, please see the git history for changes.
 
+Version 1.0.12_beta - 16 May 2018
+----------------------------
+lastlink:
+* added issue/pull request templates
+
 Version 1.0.1_beta - 7 April 2018
 ----------------------------
 lastlink:
