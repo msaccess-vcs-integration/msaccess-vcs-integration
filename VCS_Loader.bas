@@ -3,9 +3,12 @@ Option Compare Database
 
 Option Explicit
 
+'give path to root folder used, E.g. \msaccess-vcs-integration
+Public Const ROOT_FOLDER As String = ""  
+
 Public Sub loadVCS(Optional ByVal SourceDirectory As String)
     If SourceDirectory = vbNullString Then
-      SourceDirectory = CurrentProject.Path & "\MSAccess-VCS\"
+      SourceDirectory = CurrentProject.Path & ROOT_FOLDER & "\MSAccess-VCS\"
     End If
 
 'check if directory exists! - SourceDirectory could be a file or not exist
@@ -77,7 +80,7 @@ End Sub
 
 Public Sub displayFormVersion()
     Dim versionPath As String, FormsVersion As String, textline As String, posLat As Integer, posLong As Integer
-    versionPath = CurrentProject.Path & "\VERSION.txt"
+    versionPath = CurrentProject.Path & ROOT_FOLDER & "\VERSION.txt"
     Open versionPath For Input As #1
 
     Do Until EOF(1)

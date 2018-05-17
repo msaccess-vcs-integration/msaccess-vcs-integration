@@ -245,7 +245,7 @@ err_notable_fin:
     Dim connect As String
     connect = InFile.ReadLine()
     If InStr(1, connect, "DATABASE=.\") Then 'replace relative path with literal path
-        connect = Replace(connect, "DATABASE=.\", "DATABASE=" & CurrentProject.Path & "\")
+        connect = Replace(connect, "DATABASE=.\", "DATABASE=" & CurrentProject.Path & ROOT_FOLDER & "\")
     End If
     td.Attributes = dbAttachSavePWD
     td.connect = connect
