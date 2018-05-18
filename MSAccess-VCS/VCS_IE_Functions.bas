@@ -1,4 +1,3 @@
-Attribute VB_Name = "VCS_IE_Functions"
 Option Compare Database
 
 Option Private Module
@@ -28,9 +27,19 @@ Public Sub VCS_ExportObject(ByVal obj_type_num As Integer, ByVal obj_name As Str
         Dim tempFileName As String
         tempFileName = VCS_File.VCS_TempFile()
         Application.SaveAsText obj_type_num, obj_name, tempFileName
+        If obj_type_num = acModule Then
+            Open tempFileName For Append As #1
+            Write #1,
+            Close #1
+        End If
         VCS_File.VCS_ConvertUcs2Utf8 tempFileName, file_path
     Else
         Application.SaveAsText obj_type_num, obj_name, file_path
+        If obj_type_num = acModule Then
+            Open file_path For Append As #1
+            Write #1,
+            Close #1
+        End If
     End If
 End Sub
 
@@ -62,6 +71,7 @@ End Sub
 ' version control).
 Public Sub VCS_SanitizeTextFiles(ByVal Path As String, ByVal Ext As String)
 
+    Dim counter As Integer
     Dim FSO As Object
     Set FSO = CreateObject("Scripting.FileSystemObject")
     '
@@ -102,8 +112,10 @@ Public Sub VCS_SanitizeTextFiles(ByVal Path As String, ByVal Ext As String)
     Dim isReport As Boolean
     isReport = False
     
+    counter = 0
     Do Until Len(fileName) = 0
         DoEvents
+        counter = counter + 1
         Dim obj_name As String
         obj_name = Mid$(fileName, 1, InStrRev(fileName, ".") - 1)
 
@@ -186,6 +198,7 @@ Public Sub VCS_SanitizeTextFiles(ByVal Path As String, ByVal Ext As String)
         On Error GoTo ErrorHandler
         thisFile.Move (Path & fileName)
         fileName = Dir$()
+        SysCmd acSysCmdUpdateMeter, counter + 1
     Loop
     
     Exit Sub
