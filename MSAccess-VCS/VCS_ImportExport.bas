@@ -118,18 +118,20 @@ End Sub
 'returns true if named module is NOT part of the VCS code
 Private Function IsNotVCS(ByVal name As String) As Boolean
     If name <> "VCS_ImportExport" And _
-      name <> "VCS_IE_Functions" And _
-      name <> "VCS_File" And _
-      name <> "VCS_Dir" And _
-      name <> "VCS_String" And _
-      name <> "VCS_Loader" And _
-      name <> "VCS_Table" And _
-      name <> "VCS_Reference" And _
-      name <> "VCS_DataMacro" And _
-      name <> "VCS_Report" And _
-      name <> "VCS_Relation" And _
-      name <> "VCS_Query" And _
-      name <> "VCS_IniHandler" Then
+       name <> "VCS_IE_Functions" And _
+       name <> "VCS_File" And _
+       name <> "VCS_Dir" And _
+       name <> "VCS_String" And _
+       name <> "VCS_Loader" And _
+       name <> "VCS_Table" And _
+       name <> "VCS_Reference" And _
+       name <> "VCS_DataMacro" And _
+       name <> "VCS_Report" And _
+       name <> "VCS_Relation" And _
+       name <> "VCS_Query" And _
+       name <> "VCS_IniHandler" And _
+       name <> "VCS_JsonConverter" And _
+       name <> "VCS_USysRibbonImages" Then
         IsNotVCS = True
     Else
         IsNotVCS = False
@@ -267,17 +269,11 @@ Public Sub ExportAllTables(Optional ByVal doTableDefs As Boolean = True, Optiona
             If Len(td.connect) = 0 Then ' this is not an external table
                 ' This is not a system table
                 ' this is not a temporary table
-                If Left$(td.name, 4) <> "MSys" And _
-                   Left$(td.name, 1) <> "~" Then
-                    If doTableDefs Then
-                        VCS_Table.VCS_ExportTableDef td.name, obj_path
-                    End If
-                End If
                 If INCLUDE_TABLES = "*" Then
                     DoEvents
                     ' This is not a system table
                     ' this is not a temporary table
-                    If Left$(td.name, 4) <> "MSys" And _
+                    If Left$(td.name, 4) <> "MSys" And Left$(td.name, 4) <> "USys" And _
                        Left$(td.name, 1) <> "~" Then
                         If doTableDefs Then
                             VCS_Table.VCS_ExportTableDef td.name, obj_path
@@ -291,18 +287,18 @@ Public Sub ExportAllTables(Optional ByVal doTableDefs As Boolean = True, Optiona
                         End If
                     End If
                 
-            ElseIf (Len(Replace(INCLUDE_TABLES, " ", vbNullString)) > 0) And INCLUDE_TABLES <> "*" Then
-                DoEvents
-                On Error GoTo Err_TableNotFound
-                If InCollection(IncludeTablesCol, td.name) Then
-                    If doTableData Then
-                        VCS_Table.VCS_ExportTableData CStr(td.name), source_path & "tables\"
-                        obj_data_count = obj_data_count + 1
+                ElseIf (Len(Replace(INCLUDE_TABLES, " ", vbNullString)) > 0) And INCLUDE_TABLES <> "*" Then
+                    DoEvents
+                    On Error GoTo Err_TableNotFound
+                    If InCollection(IncludeTablesCol, td.name) Then
+                        If doTableData Then
+                            VCS_Table.VCS_ExportTableData CStr(td.name), source_path & "tables\"
+                            obj_data_count = obj_data_count + 1
+                        End If
                     End If
-                End If
 Err_TableNotFound:
                                                 
-                'else don't export table data
+                    'else don't export table data
                 End If
             Else
                 If doTableDefs Then
@@ -416,7 +412,7 @@ Public Sub ExportAllSource()
     Debug.Print "Done."
 End Sub
 
-Public Function ImportObjType(ByVal fileName As String, ByVal obj_type_label As String, ByVal obj_type_num As Integer, Optional ByVal ignoreVCS As Boolean = False, Optional ByVal src_path As String) As Integer
+Public Function ImportObjType(ByVal fileName As String, ByVal obj_type_label As String, ByVal obj_type_num As Integer, Optional ByVal ignoreVCS As Boolean = True, Optional ByVal src_path As String) As Integer
     Dim obj_path As String
     Dim obj_name As String
     Dim ucs2 As Boolean
@@ -432,7 +428,7 @@ Public Function ImportObjType(ByVal fileName As String, ByVal obj_type_label As 
     Else
         ucs2 = VCS_File.VCS_UsingUcs2
     End If
-    If IsNotVCS(obj_name) Then
+    If IsNotVCS(obj_name) Or Not ignoreVCS Then
         VCS_IE_Functions.VCS_ImportObject obj_type_num, obj_name, obj_path & fileName, ucs2
         ImportObjType = 1
     Else
@@ -442,7 +438,7 @@ Public Function ImportObjType(ByVal fileName As String, ByVal obj_type_label As 
     End If
 End Function
 
-Public Sub ImportObjTypeSource(ByVal obj_type As Variant, Optional ByVal ignoreVCS As Boolean = False, Optional ByVal src_path As String)
+Public Sub ImportObjTypeSource(ByVal obj_type As Variant, Optional ByVal ignoreVCS As Boolean = True, Optional ByVal src_path As String)
     Dim Db As Object ' DAO.Database
     Dim ucs2 As Boolean
     Dim obj_type_split() As String
@@ -489,22 +485,22 @@ Public Sub ImportObjTypeSource(ByVal obj_type As Variant, Optional ByVal ignoreV
 
 End Sub
 
-Public Sub ImportAllModules(Optional ByVal ignoreVCS As Boolean = False)
+Public Sub ImportAllModules(Optional ByVal ignoreVCS As Boolean = True)
     ImportObjTypeSource "modules|" & acModule, ignoreVCS
 End Sub
 
-Public Sub ImportAllForms(Optional ByVal ignoreVCS As Boolean = False, Optional ByVal src_path As String)
+Public Sub ImportAllForms(Optional ByVal ignoreVCS As Boolean = True, Optional ByVal src_path As String)
     If src_path = "" Then
         src_path = VCS_SourcePath
     End If
     ImportObjTypeSource "forms|" & acForm, ignoreVCS, src_path
 End Sub
 
-Public Sub ImportAllReports(Optional ByVal ignoreVCS As Boolean = False)
+Public Sub ImportAllReports(Optional ByVal ignoreVCS As Boolean = True)
     ImportObjTypeSource "reports|" & acReport, ignoreVCS
 End Sub
 
-Public Sub ImportAllMacros(Optional ByVal ignoreVCS As Boolean = False)
+Public Sub ImportAllMacros(Optional ByVal ignoreVCS As Boolean = True)
     ImportObjTypeSource "macros|" & acMacro, ignoreVCS
 End Sub
 
@@ -659,7 +655,7 @@ End Function
 ' Main entry point for IMPORT. Import all forms, reports, queries,
 ' macros, modules, and lookup tables from `source` folder under the
 ' database's folder.
-Public Sub ImportAllSource(Optional ByVal ignoreVCS As Boolean = False)
+Public Sub ImportAllSource(Optional ByVal ignoreVCS As Boolean = True)
     Dim FSO As Object
     Dim source_path As String
     Dim obj_path As String
@@ -832,7 +828,7 @@ Public Sub ImportProject()
     
     Dim td As DAO.TableDef
     For Each td In CurrentDb.TableDefs
-        If Left$(td.name, 4) <> "MSys" And _
+        If Left$(td.name, 4) <> "MSys" And Left$(td.name, 4) <> "USys" And _
            Left$(td.name, 1) <> "~" Then
             CurrentDb.TableDefs.Delete (td.name)
         End If
@@ -949,13 +945,13 @@ Err_Handle:
 End Function
 
 Public Function getImages(control As Object, ByRef image)
-    Dim frmRibbonImages As Form ' USysRibbonImages
+    Dim frmRibbonImages As Form ' VCS_USysRibbonImages
     Dim rsForm As DAO.Recordset2
     
     On Error Resume Next
     If frmRibbonImages Is Nothing Then
-        DoCmd.OpenForm "USysRibbonImages", WindowMode:=acHidden
-        Set frmRibbonImages = Forms("USysRibbonImages")
+        DoCmd.OpenForm "VCS_USysRibbonImages", WindowMode:=acHidden
+        Set frmRibbonImages = Forms("VCS_USysRibbonImages")
     End If
     Set rsForm = frmRibbonImages.Recordset
     

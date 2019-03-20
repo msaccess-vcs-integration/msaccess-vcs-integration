@@ -323,23 +323,8 @@ Public Sub VCS_ExportTableData(ByVal tbl_name As String, ByVal obj_path As Strin
     Set xmlElement = doc.SelectSingleNode("/root/dataroot")
     If Not xmlElement Is Nothing Then
         xmlElement.removeAttribute ("generated")
-        doc.Save (fileName)
-        
-        FieldName = xmlElement.FirstChild.FirstChild.nodeName
     End If
     
-    Set xsl = CreateDOM
-    xsl.Load (obj_path & "Sort.xsl")
-    xsl.LoadXML Replace(Replace(xsl.XML, "::VCS::TABLE_NAME::", xmlElement.FirstChild.nodeName), "::VCS::FIELD_NAME::", FieldName)
-    
-    Set xslt = New XSLTemplate60
-    Set xslt.stylesheet = xsl
-    Set xslproc = xslt.createProcessor
-    xslproc.input = doc
-    ' xslproc.addParameter "param1", "CTDB_PrimaryForeignKey"
-    ' Debug.Print xslproc.stylesheet.XML
-    xslproc.Transform
-    doc.LoadXML xslproc.output
     doc.Save fileName
     
 End Sub
