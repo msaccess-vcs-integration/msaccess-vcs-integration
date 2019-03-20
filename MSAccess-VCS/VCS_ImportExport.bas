@@ -346,7 +346,6 @@ Public Sub ExportAllSource()
     Dim Db As Object ' DAO.Database
     Dim source_path As String
     Dim obj_path As String
-    Dim qry As Object ' DAO.QueryDef
     Dim doc As Object ' DAO.Document
     Dim obj_type As Variant
     Dim obj_type_split() As String
@@ -369,30 +368,7 @@ Public Sub ExportAllSource()
 
     Debug.Print
 
-    If ExportQueries Then
-        obj_path = source_path & "queries\"
-        VCS_Dir.VCS_ClearTextFilesFromDir obj_path, "bas"
-        Debug.Print VCS_String.VCS_PadRight("Exporting queries...", 24);
-        SysCmd acSysCmdInitMeter, "Exporting queries", Db.QueryDefs.Count + 1
-        obj_count = 0
-        For Each qry In Db.QueryDefs
-            DoEvents
-            If Left$(qry.name, 1) <> "~" Then
-                If HandleQueriesAsSQL Then
-                    VCS_Query.ExportQueryAsSQL qry, obj_path & qry.name & ".bas", False
-                Else
-                    VCS_IE_Functions.VCS_ExportObject acQuery, qry.name, obj_path & qry.name & ".bas", VCS_File.VCS_UsingUcs2
-                End If
-                obj_count = obj_count + 1
-            End If
-            SysCmd acSysCmdUpdateMeter, obj_count
-        Next
-        Debug.Print VCS_String.VCS_PadRight("Sanitizing...", 15);
-        VCS_IE_Functions.VCS_SanitizeTextFiles obj_path, "bas"
-        Debug.Print "[" & obj_count & "]"
-        SysCmd acSysCmdRemoveMeter
-    End If
-
+    ExportAllQueries
     
     For Each obj_type In Split( _
                                "forms|Forms|" & acForm & "," & _
@@ -971,4 +947,41 @@ Public Sub ShowTablesWithData()
         Debug.Print tbl.name, tbl.RecordCount
       End If
     Next tbl
+End Sub
+
+Public Sub ExportAllQueries()
+    Dim Db As Object ' DAO.Database
+    Dim source_path As String
+    Dim obj_path As String
+    Dim qry As Object ' DAO.QueryDef
+    Dim obj_count As Integer
+
+    Set db = CurrentDb
+
+    source_path = VCS_Dir.VCS_ProjectPath() & "source\"
+    VCS_Dir.VCS_MkDirIfNotExist source_path
+
+    If ExportQueries Then
+        obj_path = source_path & "queries\"
+        VCS_Dir.VCS_ClearTextFilesFromDir obj_path, "bas"
+        Debug.Print VCS_String.VCS_PadRight("Exporting queries...", 24);
+        SysCmd acSysCmdInitMeter, "Exporting queries", Db.QueryDefs.Count + 1
+        obj_count = 0
+        For Each qry In Db.QueryDefs
+            DoEvents
+            If Left$(qry.name, 1) <> "~" Then
+                If HandleQueriesAsSQL Then
+                    VCS_Query.ExportQueryAsSQL qry, obj_path & qry.name & ".bas", False
+                Else
+                    VCS_IE_Functions.VCS_ExportObject acQuery, qry.name, obj_path & qry.name & ".bas", VCS_File.VCS_UsingUcs2
+                End If
+                obj_count = obj_count + 1
+            End If
+            SysCmd acSysCmdUpdateMeter, obj_count
+        Next
+        Debug.Print VCS_String.VCS_PadRight("Sanitizing...", 15);
+        VCS_IE_Functions.VCS_SanitizeTextFiles obj_path, "bas"
+        Debug.Print "[" & obj_count & "]"
+        SysCmd acSysCmdRemoveMeter
+    End If
 End Sub
