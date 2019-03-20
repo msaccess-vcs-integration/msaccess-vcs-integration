@@ -59,56 +59,56 @@ End Sub
 ' NOTE:  VCS_ImportAllSource and VCS_ImportAllModules are in VCS_Loader
 ' This is because you can't replace modules while running code in those
 ' modules.
-Public Sub VCS_ExportAllSource(ctl As Object)
+Public Sub VCS_ExportAllSource(ctl As IRibbonControl)
     LoadCustomisations
     ExportAllSource
 End Sub
-Public Sub VCS_ExportAllModules(ctl As Object)
+Public Sub VCS_ExportAllModules(ctl As IRibbonControl)
     LoadCustomisations
     ExportAllModules
 End Sub
-Public Sub VCS_ExportAllTableDefs(ctl As Object)
+Public Sub VCS_ExportAllTableDefs(ctl As IRibbonControl)
     LoadCustomisations
     ExportAllTables doTableDefs:=True, doTableData:=False
 End Sub
-Public Sub VCS_ImportAllForms(ctl As Object)
+Public Sub VCS_ImportAllForms(ctl As IRibbonControl)
     LoadCustomisations
     CloseFormsReports
     ImportAllForms
 End Sub
-Public Sub VCS_ExportAllForms(ctl As Object)
+Public Sub VCS_ExportAllForms(ctl As IRibbonControl)
     DoCmd.Hourglass True
     LoadCustomisations
     ExportAllForms
     DoCmd.Hourglass False
 End Sub
-Public Sub VCS_ImportAllReports(ctl As Object)
+Public Sub VCS_ImportAllReports(ctl As IRibbonControl)
     LoadCustomisations
     CloseFormsReports
     ImportAllReports
 End Sub
-Public Sub VCS_ExportAllReports(ctl As Object)
+Public Sub VCS_ExportAllReports(ctl As IRibbonControl)
     LoadCustomisations
     ExportAllReports
 End Sub
-Public Sub VCS_ImportAllMacros(ctl As Object)
+Public Sub VCS_ImportAllMacros(ctl As IRibbonControl)
     LoadCustomisations
     ImportAllMacros
 End Sub
-Public Sub VCS_ExportAllMacros(ctl As Object)
+Public Sub VCS_ExportAllMacros(ctl As IRibbonControl)
     LoadCustomisations
     ExportAllMacros
 End Sub
-Public Sub VCS_ImportAllTableDefs(ctl As Object)
+Public Sub VCS_ImportAllTableDefs(ctl As IRibbonControl)
     LoadCustomisations
     CloseFormsReports
     ImportAllTableDefs
 End Sub
-Public Sub VCS_ExportAllTableData(ctl As Object)
+Public Sub VCS_ExportAllTableData(ctl As IRibbonControl)
     LoadCustomisations
     ExportAllTables doTableDefs:=False, doTableData:=True
 End Sub
-Public Sub VCS_ImportAllTableData(ctl As Object)
+Public Sub VCS_ImportAllTableData(ctl As IRibbonControl)
     LoadCustomisations
     ImportAllTableData
     ImportAllTableDataMacros
@@ -361,9 +361,7 @@ Public Sub ExportAllSource()
     Dim obj_data_count As Integer
     Dim ucs2 As Boolean
 
-    LoadCustomisations
-    
-    Set Db = CurrentDb
+    Set db = CurrentDb
 
     LoadCustomisations
     
@@ -456,12 +454,7 @@ Public Sub ImportObjTypeSource(ByVal obj_type As Variant, Optional ByVal ignoreV
     Dim obj_count As Integer
     Dim fileName As String
 
-    LoadCustomisations
-    
-    CloseFormsReports
-    'InitVCS_UsingUcs2
-
-    Set Db = CurrentDb
+    Set db = CurrentDb
     
     If src_path = "" Then
         src_path = VCS_SourcePath
@@ -817,7 +810,7 @@ Public Sub ImportProject()
         End If
     Next
         
-        ' First gather all Query Names. 
+        ' First gather all Query Names.
         ' If you delete right away, the iterator loses track and only deletes every 2nd Query
         Dim toBeDeleted As Collection
     Set toBeDeleted = New Collection
@@ -955,7 +948,7 @@ Err_Handle:
     Resume Exit_Proc
 End Function
 
-Public Function getImages(control As Object, ByRef image)
+Public Function getImages(control As IRibbonControl, ByRef image)
     Dim frmRibbonImages As Form ' USysRibbonImages
     Dim rsForm As DAO.Recordset2
     

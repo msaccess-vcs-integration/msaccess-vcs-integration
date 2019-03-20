@@ -4,13 +4,18 @@ Option Private Module
 Option Explicit
 
 
-
+Public Sub ReloadTable(ByVal tbl_name As String)
+    ImportTableDef tbl_name & ".xml"
+    VCS_ExportTableDef tbl_name, VCS_SourcePath & "tbldef\"
+End Sub
 
 
 Public Sub VCS_ExportLinkedTable(ByVal tbl_name As String, ByVal obj_path As String)
     On Error GoTo Err_LinkedTable
     
     Dim tempFilePath As String
+    Dim db As DAO.Database
+    Set db = CurrentDb
     
     tempFilePath = VCS_File.VCS_TempFile()
     
@@ -23,27 +28,25 @@ Public Sub VCS_ExportLinkedTable(ByVal tbl_name As String, ByVal obj_path As Str
     
     Set OutFile = FSO.CreateTextFile(tempFilePath, overwrite:=True, Unicode:=True)
     
-    OutFile.Write CurrentDb.TableDefs(tbl_name).name
+    OutFile.Write db.TableDefs(tbl_name).name
     OutFile.Write vbCrLf
     
-    If InStr(1, CurrentDb.TableDefs(tbl_name).connect, "DATABASE=" & CurrentProject.Path) Then
+    If InStr(1, db.TableDefs(tbl_name).connect, "DATABASE=" & CurrentProject.path) Then
         'change to relatave path
         Dim connect() As String
-        connect = Split(CurrentDb.TableDefs(tbl_name).connect, CurrentProject.Path)
+        connect = Split(db.TableDefs(tbl_name).connect, CurrentProject.path)
         OutFile.Write connect(0) & "." & connect(1)
     Else
-        OutFile.Write CurrentDb.TableDefs(tbl_name).connect
+        OutFile.Write db.TableDefs(tbl_name).connect
     End If
     
     OutFile.Write vbCrLf
-    OutFile.Write CurrentDb.TableDefs(tbl_name).SourceTableName
+    OutFile.Write db.TableDefs(tbl_name).SourceTableName
     OutFile.Write vbCrLf
     
-    Dim Db As DAO.Database
-    Set Db = CurrentDb
     Dim td As DAO.TableDef
-    Set td = Db.TableDefs(tbl_name)
-    Dim idx As DAO.Index
+    Set td = db.TableDefs(tbl_name)
+    Dim idx As DAO.index
     
     For Each idx In td.Indexes
         If idx.Primary Then
@@ -67,18 +70,153 @@ Err_LinkedTable:
     Resume Err_LinkedTable_Fin
 End Sub
 
-' Save a Table Definition as SQL statement
-Public Sub VCS_ExportTableDef(ByVal tableName As String, ByVal directory As String)
-    Dim fileName As String
-    fileName = directory & tableName & ".xml"
+Private Sub InsertTableField(ByRef TheTable As TableDef, ByRef TheField As Field, ByVal Position As Integer)
+    Dim oField As Field
     
+    For Each oField In TheTable.Fields
+        If oField.OrdinalPosition >= Position Then
+            oField.OrdinalPosition = oField.OrdinalPosition + 1
+        End If
+    Next
+    
+    TheTable.Fields.Refresh
+    
+    TheField.OrdinalPosition = Position
+    TheTable.Fields.Append TheField
+    TheTable.Fields.Refresh
+    
+End Sub
+
+' Save a Table Definition as SQL statement
+Public Sub VCS_ExportTableDef(ByVal TableName As String, ByVal directory As String)
+    Dim fileName As String
+    Dim db As Database
+    fileName = directory & TableName & ".xml"
+    
+    ' If JSON version exists then use template model as well.
+    If FileExists(directory & TableName & ".json") Then
+        Dim FSO As New FileSystemObject
+        Dim JsonTS As TextStream
+        Dim JsonText As String
+        Dim Parsed As Dictionary
+        Dim oDict As New Dictionary
+        Dim oFieldsDict As New Dictionary
+        Dim oIndexesDict As New Dictionary
+        Dim oIndex As index
+        Dim oField As Field
+        Dim oOtherIndex As index
+        Dim oOtherField As Field
+        Dim oTblDef As Object
+        Dim oTemplateTblDef As TableDef
+        Dim iFieldIndex As Integer
+        
+        Set db = CurrentDb
+        ' Read .json file
+        Set JsonTS = FSO.OpenTextFile(directory & TableName & ".json", ForReading)
+        JsonText = JsonTS.ReadAll
+        JsonTS.Close
+        
+        ' Parse json to Dictionary
+        ' "values" is parsed as Collection
+        ' each item in "values" is parsed as Dictionary
+        Set Parsed = JsonConverter.ParseJson(JsonText)
+        
+        oDict("Template") = Parsed("Template")
+        
+        Set oTblDef = db.TableDefs(TableName)
+        Set oTemplateTblDef = db.TableDefs(Parsed("Template"))
+        
+        ' Compare Fields with template table.
+        ' If there are new Fields then they should be moved to the
+        ' template table as it should be the superset of valid data.
+        iFieldIndex = 0
+        For Each oField In oTblDef.Fields
+            Set oOtherField = Nothing
+            
+            On Error Resume Next
+            Set oOtherField = oTemplateTblDef.Fields(oField.name)
+            
+            If oOtherField Is Nothing Then
+                iFieldIndex = iFieldIndex + 1
+                Debug.Print "Missing Field[" & oField.name & "] @" & iFieldIndex & " from Table[" & oTemplateTblDef.name & "]"
+                Set oOtherField = oTemplateTblDef.CreateField(oField.name, oField.Type, oField.Size)
+                InsertTableField oTemplateTblDef, oOtherField, iFieldIndex
+                
+            Else
+                iFieldIndex = oOtherField.OrdinalPosition
+            End If
+            
+        Next oField
+        On Error GoTo 0
+        
+        ' Compare indexes with template table.
+        ' If there are new indexes then they should be moved to the
+        ' template table as it should be the superset of valid data.
+        For Each oIndex In oTblDef.Indexes
+            Set oOtherIndex = Nothing
+            
+            On Error Resume Next
+            Set oOtherIndex = oTemplateTblDef.Indexes(oIndex.name)
+            
+            If oOtherIndex Is Nothing Then
+                Debug.Print "Missing index[" & oIndex.name & "] from Table[" & oTemplateTblDef.name & "]"
+            End If
+            
+        Next oIndex
+        On Error GoTo 0
+        
+        ' Create dropped Indexes list.
+        For Each oIndex In oTemplateTblDef.Indexes
+            Set oOtherIndex = Nothing
+            
+            On Error Resume Next
+            Set oOtherIndex = oTblDef.Indexes(oIndex.name)
+            
+            If oOtherIndex Is Nothing Then
+                oIndexesDict(oIndex.name) = True
+            End If
+            
+        Next oIndex
+        On Error GoTo 0
+        
+        Set oDict("DropIndexes") = oIndexesDict.Keys
+                
+        ' Create dropped Fields list.
+        For Each oField In oTemplateTblDef.Fields
+            Set oOtherField = Nothing
+            
+            On Error Resume Next
+            Set oOtherField = oTblDef.Fields(oField.name)
+            
+            If oOtherField Is Nothing Then
+                oFieldsDict(oField.name) = True
+            End If
+            
+        Next oField
+        On Error GoTo 0
+        
+        Set oDict("DropFields") = oFieldsDict.Keys
+        
+        ' Write the template file.
+        Dim oFSO As Object
+        Dim oFile As Object
+        
+        Set oFSO = CreateObject("Scripting.FileSystemObject")
+        Set oFile = FSO.CreateTextFile(directory & TableName & ".json")
+        oFile.WriteLine ConvertToJson(oDict, 4)
+        oFile.Close
+        Set oFSO = Nothing
+        Set oFile = Nothing
+        
+    End If
+
     Application.ExportXML _
                ObjectType:=acExportTable, _
-               DataSource:=tableName, _
-               SchemaTarget:=fileName, _
-               OtherFlags:=acExportAllTableAndFieldProperties
+               DataSource:=TableName, _
+               SchemaTarget:=fileName
+
     'export Data Macros
-    VCS_DataMacro.VCS_ExportDataMacros tableName, directory
+    VCS_DataMacro.VCS_ExportDataMacros TableName, directory
 End Sub
 
 
@@ -143,6 +281,15 @@ Private Function TableExportSql(ByVal tbl_name As String) As String
     TableExportSql = VCS_String.VCS_Sb_Get(sb)
 End Function
 
+Private Function CreateDOM()
+    Dim dom
+    Set dom = New DOMDocument60
+    dom.async = False
+    dom.validateOnParse = False
+    dom.resolveExternals = False
+    Set CreateDOM = dom
+End Function
+
 ' Export the lookup table `tblName` to `source\tables`.
 Public Sub VCS_ExportTableData(ByVal tbl_name As String, ByVal obj_path As String)
     Dim FSO As Object
@@ -151,43 +298,58 @@ Public Sub VCS_ExportTableData(ByVal tbl_name As String, ByVal obj_path As Strin
     Dim fieldObj As Object ' DAO.Field
     Dim c As Long, Value As Variant
     Dim oXMLFile As Object
+    Dim oXSLFile As Object
     Dim xmlElement As Object
     Dim fileName As String
+    Dim FieldName As String
+    
+    Dim doc, xsl, out As DOMDocument60
+    Dim xslt As XSLTemplate60
+    Dim str As String
+    Dim xslproc
     
     ' Checks first
     If Not TableExists(tbl_name) Then
         Debug.Print "Error: Table " & tbl_name & " missing"
         Exit Sub
     End If
-    If CurrentDb.TableDefs(tbl_name).RecordCount = 0 Then
-        Debug.Print "Info: Table " & tbl_name & " has no records"
-        Exit Sub
-    End If
-
     fileName = obj_path & tbl_name & ".xml"
     
     Application.ExportXML ObjectType:=acExportTable, DataSource:=tbl_name, DataTarget:=fileName, OtherFlags:=acEmbedSchema
+
+    Set doc = CreateDOM
+    doc.Load (fileName)
     
-    ' Remove the generated date field to make diff easier.
-    Set oXMLFile = CreateObject("Microsoft.XMLDOM")
-    oXMLFile.async = False
-    oXMLFile.validateOnParse = False
-    oXMLFile.Load (fileName)
-    
-    Set xmlElement = oXMLFile.SelectSingleNode("/root/dataroot")
+    Set xmlElement = doc.SelectSingleNode("/root/dataroot")
     If Not xmlElement Is Nothing Then
         xmlElement.removeAttribute ("generated")
-        oXMLFile.Save (fileName)
+        doc.Save (fileName)
+        
+        FieldName = xmlElement.FirstChild.FirstChild.nodeName
     End If
-
+    
+    Set xsl = CreateDOM
+    xsl.Load (obj_path & "Sort.xsl")
+    xsl.LoadXML Replace(Replace(xsl.XML, "::VCS::TABLE_NAME::", xmlElement.FirstChild.nodeName), "::VCS::FIELD_NAME::", FieldName)
+    
+    Set xslt = New XSLTemplate60
+    Set xslt.stylesheet = xsl
+    Set xslproc = xslt.createProcessor
+    xslproc.input = doc
+    ' xslproc.addParameter "param1", "CTDB_PrimaryForeignKey"
+    ' Debug.Print xslproc.stylesheet.XML
+    xslproc.Transform
+    doc.LoadXML xslproc.output
+    doc.Save fileName
+    
 End Sub
 
 Public Sub VCS_ImportLinkedTable(ByVal tblName As String, ByRef obj_path As String)
-    Dim Db As DAO.Database
+    Dim db As DAO.Database
     Dim FSO As Object
     Dim InFile As Object
     
-    Set Db = CurrentDb
+    Set db = CurrentDb
     Set FSO = CreateObject("Scripting.FileSystemObject")
     
     Dim tempFilePath As String
@@ -210,18 +372,18 @@ err_notable_fin:
     On Error GoTo Err_CreateLinkedTable:
     
     Dim td As DAO.TableDef
-    Set td = Db.CreateTableDef(InFile.ReadLine())
+    Set td = db.CreateTableDef(InFile.ReadLine())
     
     Dim connect As String
     connect = InFile.ReadLine()
     If InStr(1, connect, "DATABASE=.\") Then 'replace relative path with literal path
-        connect = Replace(connect, "DATABASE=.\", "DATABASE=" & CurrentProject.Path & "\")
+        connect = Replace(connect, "DATABASE=.\", "DATABASE=" & CurrentProject.path & "\")
     End If
     td.Attributes = dbAttachSavePWD
     td.connect = connect
     
     td.SourceTableName = InFile.ReadLine()
-    Db.TableDefs.Append td
+    db.TableDefs.Append td
     
     GoTo Err_CreateLinkedTable_Fin
     
@@ -236,18 +398,18 @@ Err_CreateLinkedTable_Fin:
     
     Dim Fields As String
     Fields = InFile.ReadLine()
-    Dim Field As Variant
-    Dim sql As String
-    sql = "CREATE INDEX __uniqueindex ON " & td.name & " ("
+    Dim vField As Variant
+    Dim SQL As String
+    SQL = "CREATE INDEX __uniqueindex ON " & td.name & " ("
     
-    For Each Field In Split(Fields, ";+")
-        sql = sql & "[" & Field & "]" & ","
+    For Each vField In Split(Fields, ";+")
+        SQL = SQL & "[" & vField & "]" & ","
     Next
     'remove extraneous comma
-    sql = Left$(sql, Len(sql) - 1)
+    SQL = Left$(SQL, Len(SQL) - 1)
     
-    sql = sql & ") WITH PRIMARY"
-    CurrentDb.Execute sql
+    SQL = SQL & ") WITH PRIMARY"
+    CurrentDb.Execute SQL
     
 Err_LinkPK_Fin:
     On Error Resume Next
@@ -260,21 +422,68 @@ Public Sub VCS_ImportTableDef(ByVal tblName As String, ByVal directory As String
     Dim filePath As String
     Dim tbl As Object
     Dim prefix As String
+    Dim sTmpTable As String
+    Dim oFields As Object
+    Dim vVal As Variant
+    Dim db As Database
     
+    Set db = CurrentDb
+
     ' Drop table first.
     On Error GoTo Err_MissingTable
-    Set tbl = CurrentDb.TableDefs(tblName)
+    Set tbl = db.TableDefs(tblName)
     On Error GoTo 0
-
     If Not tbl Is Nothing Then
-        CurrentDb.Execute "Drop Table [" & tblName & "]"
+        If DCount("*", "[" & tblName & "]") > 0 Then
+            sTmpTable = "tmp_" & tblName
+            DoCmd.CopyObject , sTmpTable, acTable, tblName
+        End If
+        db.Execute "Drop Table [" & tblName & "]"
     End If
-    filePath = directory & tblName & ".xml"
-    Application.ImportXML DataSource:=filePath, ImportOptions:=acStructureOnly
+    
+    ' If JSON version exists then use template model instead.
+    If FileExists(directory & tblName & ".json") Then
+        Dim FSO As New FileSystemObject
+        Dim JsonTS As TextStream
+        Dim JsonText As String
+        Dim Parsed As Dictionary
+        
+        ' Read .json file
+        Set JsonTS = FSO.OpenTextFile(directory & tblName & ".json", ForReading)
+        JsonText = JsonTS.ReadAll
+        JsonTS.Close
+        
+        ' Parse json to Dictionary
+        ' "values" is parsed as Collection
+        ' each item in "values" is parsed as Dictionary
+        Set Parsed = JsonConverter.ParseJson(JsonText)
+        
+        DoCmd.CopyObject , tblName, acTable, Parsed("Template")
+        If Parsed.Exists("DropIndexes") Then
+            For Each vVal In Parsed("DropIndexes")
+                db.TableDefs(tblName).Indexes.Delete vVal
+            Next vVal
+        End If
+       
+        If Parsed.Exists("DropFields") Then
+            For Each vVal In Parsed("DropFields")
+                db.TableDefs(tblName).Fields.Delete vVal
+            Next vVal
+        End If
+        
+    Else
+        filePath = directory & tblName & ".xml"
+        Application.ImportXML DataSource:=filePath, ImportOptions:=acStructureOnly
+    End If
     
     prefix = Left(tblName, 2)
     If prefix = "t_" Or prefix = "u_" Then
         Application.SetHiddenAttribute acTable, tblName, True
+    End If
+    
+    If sTmpTable <> "" Then
+        db.Execute "INSERT INTO [" & tblName & "] SELECT * FROM [" & sTmpTable & "]"
+        db.Execute "Drop Table [" & sTmpTable & "]"
     End If
     
     Exit Sub
@@ -286,20 +495,21 @@ End Sub
 
 ' Import the lookup table `tblName` from `source\tables`.
 Public Sub VCS_ImportTableData(ByVal tblName As String, ByVal obj_path As String, Optional ByVal appendOnly As Boolean = False)
-    Dim Db As Object ' DAO.Database
+    Dim db As Object ' DAO.Database
     Dim rs As Object ' DAO.Recordset
     Dim fieldObj As Object ' DAO.Field
     Dim FSO As Object
     Dim InFile As Object
     Dim c As Long, buf As String, Values() As String, Value As Variant
     
-    Set Db = CurrentDb
-    
+    Set db = CurrentDb
+
     If Not (appendOnly) Then
         ' Don't delete existing data
-        Db.Execute "DELETE FROM [" & tblName & "];"
+        db.Execute "DELETE FROM [" & tblName & "];"
     End If
     
     Application.ImportXML DataSource:=obj_path, ImportOptions:=acAppendData
 
 End Sub
+
