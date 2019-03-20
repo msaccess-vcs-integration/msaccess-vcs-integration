@@ -94,7 +94,7 @@ Public Sub VCS_ExportTableDef(ByVal TableName As String, ByVal directory As Stri
     fileName = directory & TableName & ".xml"
     
     ' If JSON version exists then use template model as well.
-    If FileExists(directory & TableName & ".json") Then
+    If VCS_FileExists(directory & TableName & ".json") Then
         Dim FSO As New FileSystemObject
         Dim JsonTS As TextStream
         Dim JsonText As String
@@ -119,7 +119,7 @@ Public Sub VCS_ExportTableDef(ByVal TableName As String, ByVal directory As Stri
         ' Parse json to Dictionary
         ' "values" is parsed as Collection
         ' each item in "values" is parsed as Dictionary
-        Set Parsed = JsonConverter.ParseJson(JsonText)
+        Set Parsed = VCS_JsonConverter.ParseJson(JsonText)
         
         oDict("Template") = Parsed("Template")
         
@@ -442,7 +442,7 @@ Public Sub VCS_ImportTableDef(ByVal tblName As String, ByVal directory As String
     End If
     
     ' If JSON version exists then use template model instead.
-    If FileExists(directory & tblName & ".json") Then
+    If VCS_FileExists(directory & tblName & ".json") Then
         Dim FSO As New FileSystemObject
         Dim JsonTS As TextStream
         Dim JsonText As String
@@ -456,7 +456,7 @@ Public Sub VCS_ImportTableDef(ByVal tblName As String, ByVal directory As String
         ' Parse json to Dictionary
         ' "values" is parsed as Collection
         ' each item in "values" is parsed as Dictionary
-        Set Parsed = JsonConverter.ParseJson(JsonText)
+        Set Parsed = VCS_JsonConverter.ParseJson(JsonText)
         
         DoCmd.CopyObject , tblName, acTable, Parsed("Template")
         If Parsed.Exists("DropIndexes") Then
