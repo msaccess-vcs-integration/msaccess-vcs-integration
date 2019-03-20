@@ -419,7 +419,7 @@ Public Sub VCS_ImportTableDef(ByVal tblName As String, ByVal directory As String
     Set tbl = db.TableDefs(tblName)
     On Error GoTo 0
     If Not tbl Is Nothing Then
-        If DCount("*", "[" & tblName & "]") > 0 Then
+        If tblName <> "USysRibbonImages" And DCount("*", "[" & tblName & "]") > 0 Then
             sTmpTable = "tmp_" & tblName
             DoCmd.CopyObject , sTmpTable, acTable, tblName
         End If
