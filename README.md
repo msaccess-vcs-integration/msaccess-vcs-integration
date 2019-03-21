@@ -74,6 +74,8 @@ There are a number of configurations you can define for your database.  These ar
     ![rightClickRibbon](Assets/rightClickRibbon.png)
 2. Then click on `Import/Export` then click `import customization file` and open `./UIRibbon/vcs.exportedUI`.
     ![importCustomizationFile](Assets/importCustomizationFile.png)
+3. You should now have the new `VCS` ribbon menu.
+    ![vcsRibbonFile](Assets/VCS_Ribbon.png)
 
 # Supplied databases
 
