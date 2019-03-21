@@ -929,9 +929,9 @@ Public Sub ExportAllQueries()
     Dim sExtension As String
 
     If HandleQueriesAsSQL Then
-        sExtension = "bas"
-    Else
         sExtension = "sql"
+    Else
+        sExtension = "bas"
     End If
 
     Set db = CurrentDb
