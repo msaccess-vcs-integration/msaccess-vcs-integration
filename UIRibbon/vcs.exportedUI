@@ -8,6 +8,7 @@
 	<mso:group id="mso_c3.2E5FF7F0" label="All" autoScale="true">
 	  <mso:button id="VCS_Import" label="Import Source" screentip="Import all tables, data, modules, etc. from source" size="large" imageMso="ImportSavedImports" tag="vcs.import" onAction="VCS_ImportAllSource" visible="true"/>
 	  <mso:button id="VCS_Export" label="Export Source" screentip="Export all tables, data, modules, etc. to source" size="large" imageMso="SaveAll" tag="vcs.export" onAction="VCS_ExportAllSource" visible="true"/>
+	  <mso:button id="VCS_Load" label="Load VCS Source" screentip="Load the VCS source files" size="large" imageMso="SourceControlCheckIn" tag="vcs.load" onAction="loadVCS" visible="true"/>
 	</mso:group>
 	<mso:group id="mso_c4.2E5FF7F0" label="Import" imageMso="ControlsGallery" autoScale="true">
 	  <mso:button id="VCS_Import_Modules" label="Import Modules" screentip="Import all modules from source" size="large" imageMso="CreateModule" tag="vcs.import.modules" onAction="VCS_ImportAllModules" visible="true"/>
