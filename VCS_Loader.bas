@@ -79,12 +79,12 @@ Fin_LoadHandler:
 
 End Sub
 
-Public Sub VCS_ImportAllSource(ctl As Object)
+Public Sub VCS_ImportAllSource()
     ' VCS_LoadStub
     VCS_LoadAllSource
 End Sub
 
-Public Sub VCS_ImportAllModules(ctl As Object)
+Public Sub VCS_ImportAllModules()
     ' VCS_LoadStub
     VCS_LoadModules
 End Sub
