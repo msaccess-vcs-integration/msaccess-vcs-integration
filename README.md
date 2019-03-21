@@ -51,7 +51,7 @@ For the purposes of these instructions, assume your database is called `Applicat
 2. Type "`loadVCS`" into the immediate window followed by the directory where the other VCS files are located. If you don't specify a directory then it is assumed that the VCS code is contained in a folder called 'MSAccess-VCS' in the database directory;
 e.g. `loadVCS "C:\Users\MyUserAccount\Documents\Access-Proj\MSAccess-VCS\"` - the trailing slash is required
 or `loadVCS` will not import the new modules.
-3. Edit your [vcs.cfg](MSAccess-VCS/vcs.cfg) configuration file and define your preferences (See [#Configuration]).
+3. Edit your [vcs.cfg](MSAccess-VCS/vcs.cfg) configuration file and define your preferences (See [Configuration](#Configuration)).
 
 Configuration
 --------------------------------
