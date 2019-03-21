@@ -79,13 +79,13 @@ Fin_LoadHandler:
 
 End Sub
 
-Public Sub VCS_ImportAllSource(ctl As Object)
-    VCS_LoadStub
+Public Sub VCS_ImportAllSource()
+    ' VCS_LoadStub
     VCS_LoadAllSource
 End Sub
 
-Public Sub VCS_ImportAllModules(ctl As Object)
-    VCS_LoadStub
+Public Sub VCS_ImportAllModules()
+    ' VCS_LoadStub
     VCS_LoadModules
 End Sub
 
@@ -113,7 +113,7 @@ Private Sub VCS_Bootstrap_Tables()
     CloseFormsReports
     ImportAllTableDefs(CurrentProject.Path & "\MSAccess-VCS\")
     ImportAllTableData(CurrentProject.Path & "\MSAccess-VCS\")
-    ImportAllForms ignoreVCS:=True, src_path:=CurrentProject.Path & "\MSAccess-VCS\"
+    ImportAllForms ignoreVCS:=False, src_path:=CurrentProject.Path & "\MSAccess-VCS\"
     On Error Resume Next
     CurrentDb.Properties.Delete "CustomRibbonID"
     CurrentDB.Properties.Append CurrentDB.CreateProperty("CustomRibbonID", dbText, "VCS Tab")
