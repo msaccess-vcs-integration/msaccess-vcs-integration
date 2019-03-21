@@ -51,14 +51,17 @@ For the purposes of these instructions, assume your database is called `Applicat
 2. Type "`loadVCS`" into the immediate window followed by the directory where the other VCS files are located. If you don't specify a directory then it is assumed that the VCS code is contained in a folder called 'MSAccess-VCS' in the database directory;
 e.g. `loadVCS "C:\Users\MyUserAccount\Documents\Access-Proj\MSAccess-VCS\"` - the trailing slash is required
 or `loadVCS` will not import the new modules.
-3. Edit your `VCS_ImportExport` and change the constant `INCLUDE_TABLES` to list any lookup tables that function more as part of your application code than as client data. (For example, "Countries", "Colors", and things like that.)
+3. Edit your [vcs.cfg](MSAccess-VCS/vcs.cfg) configuration file and define your preferences (See [#Configuration]).
 
-Configuring export
+Configuration
 --------------------------------
-
-By default, no table data is exported. You must specify which tables' data to include in the export/import process by editing the `INCLUDE_TABLES` variable in the supplied module. For example you might have "Countries" or "Colors" tables that populate dropdown lists. You shouldn't include regular data tables containing actual records, because this data doesn't belong in version control.
-
-Additionally, if a type of data should not be exported, change the "Export_" constants to `False` in `VCS_ImportExport.bas`. Report, Query, Form, Macro, Module, and Table exports can be disabled individually.
+There are a number of configurations you can define for your database.  These are done in the [vcs.cfg](MSAccess-VCS/vcs.cfg) file located at the same level as your database.
+1. Define the tables to you want to export data for.
+   By default no table data is exported.  You can change this by specifying a list of tables in the `IncludeTables` variable.
+   For example you might have "Countries" or "Colors" tables that populate dropdown lists. You shouldn't include regular data tables containing actual records, because this data doesn't belong in version control.
+   You can also specify `*` to export all tables, but you should consider if this is relevant for version control.
+2. You can control which data types are exported by setting the `Export{data type}` variable to true or false for each of the data types.
+   Valid data types:  Reports, Queries, Forms, Modules, Tables.
 
 Supplied databases
 ------------------
