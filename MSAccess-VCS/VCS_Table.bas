@@ -265,7 +265,7 @@ Private Function TableExportSql(ByVal tbl_name As String) As String
     Count = 0
     For Each fieldObj In rs.Fields
         If Count > 0 Then VCS_String.VCS_Sb_Append sb, ", "
-        VCS_String.VCS_Sb_Append sb, "[" & fieldObj.name & "]"
+        VCS_String.VCS_Sb_Append sb, "[" & fieldObj.Name & "]"
         Count = Count + 1
     Next
     
@@ -275,7 +275,7 @@ Private Function TableExportSql(ByVal tbl_name As String) As String
     For Each fieldObj In rs.Fields
         DoEvents
         If Count > 0 Then VCS_String.VCS_Sb_Append sb, ", "
-        VCS_String.VCS_Sb_Append sb, "[" & fieldObj.name & "]"
+        VCS_String.VCS_Sb_Append sb, "[" & fieldObj.Name & "]"
         Count = Count + 1
     Next
 

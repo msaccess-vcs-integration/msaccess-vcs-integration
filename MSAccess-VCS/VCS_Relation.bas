@@ -18,7 +18,7 @@ Public Sub VCS_ExportRelation(ByVal rel As DAO.Relation, ByVal filePath As Strin
     Dim f As DAO.Field
     For Each f In rel.Fields
         OutFile.WriteLine "Field = Begin"
-        OutFile.WriteLine f.name
+        OutFile.WriteLine f.Name
         OutFile.WriteLine f.ForeignName
         OutFile.WriteLine "End"
     Next
@@ -44,7 +44,7 @@ Public Sub VCS_ImportRelation(ByVal filePath As String)
     Do Until InFile.AtEndOfStream
         If "Field = Begin" = InFile.ReadLine Then
             Set f = New DAO.Field
-            f.name = InFile.ReadLine
+            f.Name = InFile.ReadLine
             f.ForeignName = InFile.ReadLine
             If "End" <> InFile.ReadLine Then
                 Set f = Nothing
