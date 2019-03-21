@@ -5,7 +5,13 @@ Option Explicit
 
 Public Sub loadVCS(Optional ByVal SourceDirectory As String)
     If SourceDirectory = vbNullString Then
-      SourceDirectory = CurrentProject.Path & "\MSAccess-VCS\"
+        SourceDirectory = CurrentProject.Path & "\MSAccess-VCS\"
+        On Error Resume Next
+        If Not ((GetAttr(SourceDirectory) And vbDirectory) <> vbDirectory) Then
+            ' Ask the user where the source is.
+            SourceDirectory = VCS_GetFolder
+            ' InputBox("Please specify the directory where the VCS files exist:", "VCS Load", CurrentProject.Path)
+        End If
     End If
 
 'check if directory exists! - SourceDirectory could be a file or not exist
@@ -74,7 +80,7 @@ Err_LoadHandler:
     Resume Next
 
 Fin_LoadHandler:
-    VCS_Bootstrap
+    VCS_Bootstrap SourceDirectory
     Debug.Print "Done"
     
     displayFormVersion
@@ -131,18 +137,32 @@ Public Sub VCS_LoadAllSource()
     ImportAllSource True
 End Sub
 
-Private Sub VCS_Bootstrap()
-    VCS_Reference.VCS_ImportReferences(CurrentProject.Path & "\MSAccess-VCS\")
+Private Sub VCS_Bootstrap(ByVal SourceDirectory As String)
+    VCS_Reference.VCS_ImportReferences(SourceDirectory)
     LoadCustomisations
-    VCS_Bootstrap_Tables
+    VCS_Bootstrap_Tables SourceDirectory
 End Sub
 
-Private Sub VCS_Bootstrap_Tables()
+Private Function VCS_GetFolder() As String
+    Const msoFileDialogFolderPicker As Long = 4
+    Dim fldr As Object
+    Dim sItem As String
+    Set fldr = Application.FileDialog(msoFileDialogFolderPicker)
+    With fldr
+        .Title = "Select a Folder"
+        .AllowMultiSelect = False
+        .InitialFileName = CurrentProject.Path
+        If .Show <> -1 Then GoTo NextCode
+        sItem = .SelectedItems(1)
+    End With
+NextCode:
+    VCS_GetFolder = sItem & "\"
+    Set fldr = Nothing
+End Function
+
+Private Sub VCS_Bootstrap_Tables(ByVal SourceDirectory As String)
     CloseFormsReports
-    ImportAllTableDefs(CurrentProject.Path & "\MSAccess-VCS\")
-    ImportAllTableData(CurrentProject.Path & "\MSAccess-VCS\")
-    ImportAllForms ignoreVCS:=False, src_path:=CurrentProject.Path & "\MSAccess-VCS\"
-    On Error Resume Next
-    CurrentDb.Properties.Delete "CustomRibbonID"
-    CurrentDB.Properties.Append CurrentDB.CreateProperty("CustomRibbonID", dbText, "VCS Tab")
+    ImportAllTableDefs(SourceDirectory)
+    ImportAllTableData(SourceDirectory)
+    ImportAllForms ignoreVCS:=False, src_path:=SourceDirectory
 End Sub
