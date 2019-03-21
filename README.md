@@ -67,11 +67,12 @@ There are a number of configurations you can define for your database.  These ar
    Valid data types:  Reports, Queries, Forms, Modules, Tables.
 3. By default queries are exported as SQL.  You can convert back to the old model which is more like code by setting `HandleQueriesAsSQL=False`.
 4. You can turn on the export of the VCS_* modules (this is off by default).  To do this set `ArchiveMyself=True`
+
 # Updating UIRibbon
 
 1. Right click anywhere on the ribbon, click `customize ribbon`.
     ![rightClickRibbon](Assets/rightClickRibbon.png)
-2. Then click on `Import/Export` then click `import customization file` and open `./UIRibbon/FORM UPDATES.exportedUI`.
+2. Then click on `Import/Export` then click `import customization file` and open `./UIRibbon/vcs.exportedUI`.
     ![importCustomizationFile](Assets/importCustomizationFile.png)
 
 # Supplied databases

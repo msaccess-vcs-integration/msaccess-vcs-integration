@@ -3,6 +3,12 @@ Change log
 
 This change log isn't being kept up to date any more, please see the git history for changes.
 
+Version 1.0.2_beta - 18 March 2019
+----------------------------
+hangie:
+* added new custom ui ribbon for nondevelopers to support import/export of all types.
+* added new configuration file to support customizations instead of editing VCS files directly.
+
 Version 1.0.1_beta - 7 April 2018
 ----------------------------
 lastlink:
