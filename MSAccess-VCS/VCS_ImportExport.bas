@@ -926,6 +926,13 @@ Public Sub ExportAllQueries()
     Dim obj_path As String
     Dim qry As Object ' DAO.QueryDef
     Dim obj_count As Integer
+    Dim sExtension As String
+
+    If HandleQueriesAsSQL Then
+        sExtension = "bas"
+    Else
+        sExtension = "sql"
+    End If
 
     Set db = CurrentDb
 
@@ -934,7 +941,7 @@ Public Sub ExportAllQueries()
 
     If ExportQueries Then
         obj_path = source_path & "queries\"
-        VCS_Dir.VCS_ClearTextFilesFromDir obj_path, "bas"
+        VCS_Dir.VCS_ClearTextFilesFromDir obj_path, sExtension
         Debug.Print VCS_String.VCS_PadRight("Exporting queries...", 24);
         SysCmd acSysCmdInitMeter, "Exporting queries", Db.QueryDefs.Count + 1
         obj_count = 0
@@ -942,16 +949,16 @@ Public Sub ExportAllQueries()
             DoEvents
             If Left$(qry.name, 1) <> "~" Then
                 If HandleQueriesAsSQL Then
-                    VCS_Query.ExportQueryAsSQL qry, obj_path & qry.name & ".bas", False
+                    VCS_Query.ExportQueryAsSQL qry, obj_path & qry.name & "." & sExtension, False
                 Else
-                    VCS_IE_Functions.VCS_ExportObject acQuery, qry.name, obj_path & qry.name & ".bas", VCS_File.VCS_UsingUcs2
+                    VCS_IE_Functions.VCS_ExportObject acQuery, qry.name, obj_path & qry.name & "." & sExtension, VCS_File.VCS_UsingUcs2
                 End If
                 obj_count = obj_count + 1
             End If
             SysCmd acSysCmdUpdateMeter, obj_count
         Next
         Debug.Print VCS_String.VCS_PadRight("Sanitizing...", 15);
-        VCS_IE_Functions.VCS_SanitizeTextFiles obj_path, "bas"
+        VCS_IE_Functions.VCS_SanitizeTextFiles obj_path, sExtension
         Debug.Print "[" & obj_count & "]"
         SysCmd acSysCmdRemoveMeter
     End If
@@ -976,11 +983,18 @@ Public Sub ImportAllQueries()
     Dim obj_name As String
     Dim fileName As String
     Dim obj_count As Integer
+    Dim sExtension As String
+
+    If HandleQueriesAsSQL Then
+        sExtension = "sql"
+    Else
+        sExtension = "bas"
+    End If
 
     source_path = VCS_Dir.VCS_ProjectPath() & "source\"
 
     obj_path = source_path & "queries\"
-    fileName = Dir$(obj_path & "*.bas")
+    fileName = Dir$(obj_path & "*." & sExtension)
     
     Dim tempFilePath As String
     tempFilePath = VCS_File.VCS_TempFile()
