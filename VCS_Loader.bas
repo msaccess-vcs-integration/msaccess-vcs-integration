@@ -76,7 +76,35 @@ Err_LoadHandler:
 Fin_LoadHandler:
     VCS_Bootstrap
     Debug.Print "Done"
+    
+    displayFormVersion
+End Sub
 
+Public Sub displayFormVersion()
+    Dim versionPath As String, FormsVersion As String, textline As String, posLat As Integer, posLong As Integer
+    Dim FSO As Object
+    Dim outFile As Object
+    versionPath = CurrentProject.Path & "\VERSION.txt"
+
+    If Not VCS_FileExists(versionPath) Then
+        Set FSO = CreateObject("Scripting.FileSystemObject")
+        Set outFile = FSO.CreateTextFile(versionPath, overwrite:=False, Unicode:=False)
+        outFile.WriteLine "0.01"
+        outFile.Close
+        Set outFile = Nothing
+        Set FSO = Nothing
+    End If
+    
+    Open versionPath For Input As #1
+
+    Do Until EOF(1)
+        Line Input #1, textline
+        FormsVersion = FormsVersion & textline
+        
+    Loop
+    Close #1
+
+    MsgBox "Form Version: " & FormsVersion & " loaded"
 End Sub
 
 Public Sub VCS_ImportAllSource()
