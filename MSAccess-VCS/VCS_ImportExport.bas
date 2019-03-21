@@ -659,38 +659,9 @@ Public Sub ImportAllSource(Optional ByVal ignoreVCS As Boolean = True)
     End If
 
     Debug.Print
-    
 
-    obj_path = source_path & "queries\"
-    fileName = Dir$(obj_path & "*.bas")
-    
-    Dim tempFilePath As String
-    tempFilePath = VCS_File.VCS_TempFile()
-    
-    If Len(fileName) > 0 Then
-        Debug.Print VCS_String.VCS_PadRight("Importing queries...", 24);
-        SysCmd acSysCmdInitMeter, "Importing queries", 100
-        obj_count = 0
-        Do Until Len(fileName) = 0
-            DoEvents
-            obj_name = Mid$(fileName, 1, InStrRev(fileName, ".") - 1)
-            'Check for plain sql export/import
-            if HandleQueriesAsSQL then
-                VCS_Query.ImportQueryFromSQL obj_name, obj_path & fileName, False
-            Else
-                VCS_IE_Functions.VCS_ImportObject acQuery, obj_name, obj_path & fileName, VCS_File.VCS_UsingUcs2
-                VCS_IE_Functions.VCS_ExportObject acQuery, obj_name, tempFilePath, VCS_File.VCS_UsingUcs2
-                VCS_IE_Functions.VCS_ImportObject acQuery, obj_name, tempFilePath, VCS_File.VCS_UsingUcs2
-            End if          
-            obj_count = obj_count + 1
-            fileName = Dir$()
-            SysCmd acSysCmdUpdateMeter, obj_count
-        Loop
-        SysCmd acSysCmdRemoveMeter
-        Debug.Print "[" & obj_count & "]"
-    End If
-    
-    VCS_Dir.VCS_DelIfExist tempFilePath
+    ' restore query definitions
+    ImportAllQueries
 
     ' restore table definitions
     ImportAllTableDefs
@@ -984,4 +955,58 @@ Public Sub ExportAllQueries()
         Debug.Print "[" & obj_count & "]"
         SysCmd acSysCmdRemoveMeter
     End If
+End Sub
+
+Public Sub VCS_ImportAllQueries(ctl As Object)
+    LoadCustomisations
+    CloseFormsReports
+    ImportAllQueries
+End Sub
+
+Public Sub VCS_ExportAllQueries(ctl As Object)
+    DoCmd.Hourglass True
+    LoadCustomisations
+    ExportAllQueries
+    DoCmd.Hourglass False
+End Sub
+
+Public Sub ImportAllQueries()
+    Dim source_path As String
+    Dim obj_path As String
+    Dim obj_name As String
+    Dim fileName As String
+    Dim obj_count As Integer
+
+    source_path = VCS_Dir.VCS_ProjectPath() & "source\"
+
+    obj_path = source_path & "queries\"
+    fileName = Dir$(obj_path & "*.bas")
+    
+    Dim tempFilePath As String
+    tempFilePath = VCS_File.VCS_TempFile()
+    
+    If Len(fileName) > 0 Then
+        Debug.Print VCS_String.VCS_PadRight("Importing queries...", 24);
+        SysCmd acSysCmdInitMeter, "Importing queries", 100
+        obj_count = 0
+        Do Until Len(fileName) = 0
+            DoEvents
+            obj_name = Mid$(fileName, 1, InStrRev(fileName, ".") - 1)
+            'Check for plain sql export/import
+            if HandleQueriesAsSQL then
+                VCS_Query.ImportQueryFromSQL obj_name, obj_path & fileName, False
+            Else
+                VCS_IE_Functions.VCS_ImportObject acQuery, obj_name, obj_path & fileName, VCS_File.VCS_UsingUcs2
+                VCS_IE_Functions.VCS_ExportObject acQuery, obj_name, tempFilePath, VCS_File.VCS_UsingUcs2
+                VCS_IE_Functions.VCS_ImportObject acQuery, obj_name, tempFilePath, VCS_File.VCS_UsingUcs2
+            End if          
+            obj_count = obj_count + 1
+            fileName = Dir$()
+            SysCmd acSysCmdUpdateMeter, obj_count
+        Loop
+        SysCmd acSysCmdRemoveMeter
+        Debug.Print "[" & obj_count & "]"
+    End If
+    
+    VCS_Dir.VCS_DelIfExist tempFilePath
 End Sub

@@ -1,73 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:od="urn:schemas-microsoft-com:officedata">
-	<xsd:schema>
-		<xsd:element name="dataroot">
-			<xsd:complexType>
-				<xsd:sequence>
-					<xsd:element ref="USysRibbonImages" minOccurs="0" maxOccurs="unbounded"/>
-				</xsd:sequence>
-				<xsd:attribute name="generated" type="xsd:dateTime"/>
-			</xsd:complexType>
-		</xsd:element>
-		<xsd:element name="USysRibbonImages">
-			<xsd:annotation>
-				<xsd:appinfo>
-					<od:index index-name="PrimaryKey" index-key="ControlId " primary="yes" unique="yes" clustered="no" order="asc"/>
-				</xsd:appinfo>
-			</xsd:annotation>
-			<xsd:complexType>
-				<xsd:sequence>
-					<xsd:element name="ControlId" minOccurs="1" od:jetType="text" od:sqlSType="nvarchar" od:nonNullable="yes">
-						<xsd:simpleType>
-							<xsd:restriction base="xsd:string">
-								<xsd:maxLength value="255"/>
-							</xsd:restriction>
-						</xsd:simpleType>
-					</xsd:element>
-					<xsd:element name="Images" minOccurs="0" od:jetType="complex" od:jetComplexType="MSysComplexType_Attachment" maxOccurs="unbounded">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="FileData" minOccurs="0" od:jetType="oleobject" od:sqlSType="image">
-									<xsd:simpleType>
-										<xsd:restriction base="xsd:base64Binary">
-											<xsd:maxLength value="1476395008"/>
-										</xsd:restriction>
-									</xsd:simpleType>
-								</xsd:element>
-								<xsd:element name="FileFlags" minOccurs="0" od:jetType="longinteger" od:sqlSType="int" type="xsd:int"/>
-								<xsd:element name="FileName" minOccurs="0" od:jetType="text" od:sqlSType="nvarchar">
-									<xsd:simpleType>
-										<xsd:restriction base="xsd:string">
-											<xsd:maxLength value="255"/>
-										</xsd:restriction>
-									</xsd:simpleType>
-								</xsd:element>
-								<xsd:element name="FileTimeStamp" minOccurs="0" od:jetType="datetime" od:sqlSType="datetime" type="xsd:dateTime"/>
-								<xsd:element name="FileType" minOccurs="0" od:jetType="text" od:sqlSType="nvarchar">
-									<xsd:simpleType>
-										<xsd:restriction base="xsd:string">
-											<xsd:maxLength value="255"/>
-										</xsd:restriction>
-									</xsd:simpleType>
-								</xsd:element>
-								<xsd:element name="FileURL" minOccurs="0" od:jetType="memo" od:sqlSType="ntext">
-									<xsd:simpleType>
-										<xsd:restriction base="xsd:string">
-											<xsd:maxLength value="536870910"/>
-										</xsd:restriction>
-									</xsd:simpleType>
-								</xsd:element>
-							</xsd:sequence>
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="Description" minOccurs="0" od:jetType="memo" od:sqlSType="ntext">
-						<xsd:simpleType>
-							<xsd:restriction base="xsd:string">
-								<xsd:maxLength value="536870910"/>
-							</xsd:restriction>
-						</xsd:simpleType>
-					</xsd:element>
-				</xsd:sequence>
+<xsd:schema>
+<xsd:element name="dataroot">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element ref="USysRibbonImages" minOccurs="0" maxOccurs="unbounded"/>
+</xsd:sequence>
+<xsd:attribute name="generated" type="xsd:dateTime"/>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="USysRibbonImages">
+<xsd:annotation>
+<xsd:appinfo>
+<od:index index-name="PrimaryKey" index-key="ControlId " primary="yes" unique="yes" clustered="no" order="asc"/>
+<od:tableProperty name="Orientation" type="2" value="0"/>
+</xsd:appinfo>
+</xsd:annotation>
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="ControlId" minOccurs="1" od:jetType="text" od:sqlSType="nvarchar" od:nonNullable="yes">
+<xsd:annotation>
+<xsd:appinfo>
+<od:fieldProperty name="Required" type="1" value="1"/>
+</xsd:appinfo>
+</xsd:annotation>
+<xsd:simpleType>
+<xsd:restriction base="xsd:string">
+<xsd:maxLength value="255"/>
+</xsd:restriction>
+</xsd:simpleType>
+</xsd:element>
+<xsd:element name="Images" minOccurs="0" od:jetType="complex" od:jetComplexType="MSysComplexType_Attachment" maxOccurs="unbounded">
+<xsd:annotation>
+<xsd:appinfo>
+<od:fieldProperty name="Required" type="1" value="0"/>
+</xsd:appinfo>
+</xsd:annotation>
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element name="FileData" minOccurs="0" od:jetType="oleobject" od:sqlSType="image">
+<xsd:simpleType>
+<xsd:restriction base="xsd:base64Binary">
+<xsd:maxLength value="1476395008"/>
+</xsd:restriction>
+</xsd:simpleType>
+</xsd:element>
+<xsd:element name="FileFlags" minOccurs="0" od:jetType="longinteger" od:sqlSType="int" type="xsd:int"/>
+<xsd:element name="FileName" minOccurs="0" od:jetType="text" od:sqlSType="nvarchar">
+<xsd:simpleType>
+<xsd:restriction base="xsd:string">
+<xsd:maxLength value="255"/>
+</xsd:restriction>
+</xsd:simpleType>
+</xsd:element>
+<xsd:element name="FileTimeStamp" minOccurs="0" od:jetType="datetime" od:sqlSType="datetime" type="xsd:dateTime"/>
+<xsd:element name="FileType" minOccurs="0" od:jetType="text" od:sqlSType="nvarchar">
+<xsd:simpleType>
+<xsd:restriction base="xsd:string">
+<xsd:maxLength value="255"/>
+</xsd:restriction>
+</xsd:simpleType>
+</xsd:element>
+<xsd:element name="FileURL" minOccurs="0" od:jetType="memo" od:sqlSType="ntext">
+<xsd:simpleType>
+<xsd:restriction base="xsd:string">
+<xsd:maxLength value="536870910"/>
+</xsd:restriction>
+</xsd:simpleType>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="Description" minOccurs="0" od:jetType="memo" od:sqlSType="ntext">
+<xsd:annotation>
+<xsd:appinfo>
+<od:fieldProperty name="Required" type="1" value="0"/>
+</xsd:appinfo>
+</xsd:annotation>
+<xsd:simpleType>
+<xsd:restriction base="xsd:string">
+<xsd:maxLength value="536870910"/>
+</xsd:restriction>
+</xsd:simpleType>
+</xsd:element>
+</xsd:sequence>
 			</xsd:complexType>
 		</xsd:element>
 	</xsd:schema>
@@ -75,7 +91,7 @@
 		<USysRibbonImages>
 			<ControlId>VCS_Export</ControlId>
 			<Images>
-				<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
 AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
 BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
 DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
@@ -134,15 +150,15 @@ WJkOkXO/Mmny7j/r4opLZ26YM7L/AAE18v1+5X/BaH/g4c/ZR/4Kq/sNa58OYfBP
 xq03xhZzxav4W1O/0bS1gsNQiyo8xk1F3EUsTyxPtVsCTdtZlWvw1oAKKKKACiii
 gAooooAKKKKACiiigAooooAKKKKAP//Z
 </FileData>
-				<FileName>Save to system.jpg</FileName>
-				<FileType>jpg</FileType>
-			</Images>
-			<Description>Export to system.</Description>
-		</USysRibbonImages>
-		<USysRibbonImages>
-			<ControlId>VCS_Export_Forms</ControlId>
-			<Images>
-				<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+<FileName>Save to system.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+<Description>Export to system.</Description>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Export_Forms</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
 AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
 BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
 DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
@@ -214,14 +230,14 @@ iN/wTm8DfB3W/HUPl2/xb8MrrsSrCyHSLnfmTT5dx/18UUls7dMGdl/gJr5cr9yv
 +Cz3/Bwt+yj/AMFUv2Hdc+HcPgv41ab4ws54tX8Lanf6NpawWGoRZUeYyai7iKWJ
 5Yn2q2BJu2syrX4a0AFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH/9k=
 </FileData>
-				<FileName>Save Forms to system.jpg</FileName>
-				<FileType>jpg</FileType>
-			</Images>
-		</USysRibbonImages>
-		<USysRibbonImages>
-			<ControlId>VCS_Export_Macros</ControlId>
-			<Images>
-				<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+<FileName>Save Forms to system.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Export_Macros</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
 AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
 BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
 DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
@@ -308,14 +324,14 @@ O6346h8u3+LfhlddiVYWQ6Rc78yafLuP+viiktnbpgzsv8BNfLlfuV/wWe/4OFv2
 Uf8Agql+w7rnw7h8F/GrTfGFnPFq/hbU7/RtLWCw1CLKjzGTUXcRSxPLE+1WwJN2
 1mVa/DWgAooooAKKKKACiiigAooooAKKKKACiiigAooooA//2Q==
 </FileData>
-				<FileName>Save Macos to system.jpg</FileName>
-				<FileType>jpg</FileType>
-			</Images>
-		</USysRibbonImages>
-		<USysRibbonImages>
-			<ControlId>VCS_Export_Modules</ControlId>
-			<Images>
-				<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+<FileName>Save Macos to system.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Export_Modules</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
 AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
 BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
 DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
@@ -392,14 +408,14 @@ Bknmij8ozKnmbm+ZAy4+agDsf+CgP/BLD4jf8E5vA3wd1vx1D5dv8W/DK67Eqwsh
 +MLOeLV/C2p3+jaWsFhqEWVHmMmou4ilieWJ9qtgSbtrMq1+GtABRRRQAUUUUAFF
 FFABRRRQAUUUUAFFFFABRRRQB//Z
 </FileData>
-				<FileName>Save to system - Copy.jpg</FileName>
-				<FileType>jpg</FileType>
-			</Images>
-		</USysRibbonImages>
-		<USysRibbonImages>
-			<ControlId>VCS_Export_Reports</ControlId>
-			<Images>
-				<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+<FileName>Save to system - Copy.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Export_Reports</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
 AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
 BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
 DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
@@ -475,14 +491,14 @@ y7f4t+GV12JVhZDpFzvzJp8u4/6+KKS2dumDOy/wE18uV+5X/BZ7/g4W/ZR/4Kpf
 sO658O4fBfxq03xhZzxav4W1O/0bS1gsNQiyo8xk1F3EUsTyxPtVsCTdtZlWvw1o
 AKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/2Q==
 </FileData>
-				<FileName>Save Reports to system.jpg</FileName>
-				<FileType>jpg</FileType>
-			</Images>
-		</USysRibbonImages>
-		<USysRibbonImages>
-			<ControlId>VCS_Export_TableData</ControlId>
-			<Images>
-				<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+<FileName>Save Reports to system.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Export_TableData</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
 AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
 BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
 DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
@@ -563,14 +579,14 @@ dH/Eat+yz/0IPx//APBHpH/yzoA8w/4gfvAP/RfPF3/hOW//AMeo/wCIH7wD/wBF
 9lH/AIKpfsO658O4fBfxq03xhZzxav4W1O/0bS1gsNQiyo8xk1F3EUsTyxPtVsCT
 dtZlWvw1oAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/9k=
 </FileData>
-				<FileName>Save TableDefs to system.jpg</FileName>
-				<FileType>jpg</FileType>
-			</Images>
-		</USysRibbonImages>
-		<USysRibbonImages>
-			<ControlId>VCS_Export_TableDefs</ControlId>
-			<Images>
-				<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+<FileName>Save TableDefs to system.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Export_TableDefs</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
 AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
 BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
 DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
@@ -639,14 +655,14 @@ oo/KMyp5m5vmQMuPmoA7H/goD/wSw+I3/BObwN8Hdb8dQ+Xb/FvwyuuxKsLIdIud
 s54tX8Lanf6NpawWGoRZUeYyai7iKWJ5Yn2q2BJu2syrX4a0AFFFFABRRRQAUUUU
 AFFFFABRRRQAUUUUAFFFFAH/2Q==
 </FileData>
-				<FileName>Save TabeDefs to system.jpg</FileName>
-				<FileType>jpg</FileType>
-			</Images>
-		</USysRibbonImages>
-		<USysRibbonImages>
-			<ControlId>VCS_Import</ControlId>
-			<Images>
-				<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+<FileName>Save TabeDefs to system.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Import</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
 AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
 BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
 DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
@@ -702,14 +718,14 @@ Hdc8dQ+Xb/FvwyuuxKsTIdIud+ZNPl3H/XxRSWzt0wZ2X+Amvl+v3K/4LQ/8HDn7
 KP8AwVV/Ya1z4cw+CfjVpvjCzni1fwtqd/o2lrBYahFlR5jJqLuIpYnlifarYEm7
 azKtfhrQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAf/2Q==
 </FileData>
-				<FileName>Restore from system.jpg</FileName>
-				<FileType>jpg</FileType>
-			</Images>
-		</USysRibbonImages>
-		<USysRibbonImages>
-			<ControlId>VCS_Import_Forms</ControlId>
-			<Images>
-				<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+<FileName>Restore from system.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Import_Forms</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
 AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
 BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
 DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
@@ -778,14 +794,14 @@ D/wvqC6te6Volpb3d1qcsPzwQMk80UflGZU8zc3zIGXHzUAdl/wUC/4JX/Eb/gnL
 /wCDhj9lH/gqn+w5rnw6h8FfGrTfGFnPFq/hbU7/AEbS1gsNQiyo8xk1F3EUsTyx
 PtVsCTdtZlWvw1oAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/Z
 </FileData>
-				<FileName>Restore Forms from system.jpg</FileName>
-				<FileType>jpg</FileType>
-			</Images>
-		</USysRibbonImages>
-		<USysRibbonImages>
-			<ControlId>VCS_Import_Macros</ControlId>
-			<Images>
-				<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+<FileName>Restore Forms from system.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Import_Macros</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
 AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
 BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
 DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
@@ -869,14 +885,14 @@ opLZ26YM7L/ATXy7X7lf8Fn/APg4Y/ZR/wCCqf7DmufDqHwV8atN8YWc8Wr+FtTv
 9G0tYLDUIsqPMZNRdxFLE8sT7VbAk3bWZVr8NaACiiigAooooAKKKKACiiigAooo
 oAKKKKACiiigD//Z
 </FileData>
-				<FileName>Restore Macros from system.jpg</FileName>
-				<FileType>jpg</FileType>
-			</Images>
-		</USysRibbonImages>
-		<USysRibbonImages>
-			<ControlId>VCS_Import_Modules</ControlId>
-			<Images>
-				<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+<FileName>Restore Macros from system.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Import_Modules</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
 AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
 BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
 DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
@@ -951,14 +967,14 @@ r4opLZ26YM7L/ATXy7X7lf8ABZ//AIOGP2Uf+Cqf7DmufDqHwV8atN8YWc8Wr+Ft
 Tv8ARtLWCw1CLKjzGTUXcRSxPLE+1WwJN21mVa/DWgAooooAKKKKACiiigAooooA
 KKKKACiiigAooooA/9k=
 </FileData>
-				<FileName>Restore from system - Copy.jpg</FileName>
-				<FileType>jpg</FileType>
-			</Images>
-		</USysRibbonImages>
-		<USysRibbonImages>
-			<ControlId>VCS_Import_Reports</ControlId>
-			<Images>
-				<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+<FileName>Restore from system - Copy.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Import_Reports</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
 AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
 BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
 DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
@@ -1031,14 +1047,14 @@ O3TBnZf4Ca+Xa/cr/gs//wAHDH7KP/BVP9hzXPh1D4K+NWm+MLOeLV/C2p3+jaWs
 FhqEWVHmMmou4ilieWJ9qtgSbtrMq1+GtABRRRQAUUUUAFFFFABRRRQAUUUUAFFF
 FABRRRQB/9k=
 </FileData>
-				<FileName>Restore Reports from system.jpg</FileName>
-				<FileType>jpg</FileType>
-			</Images>
-		</USysRibbonImages>
-		<USysRibbonImages>
-			<ControlId>VCS_Import_TableData</ControlId>
-			<Images>
-				<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+<FileName>Restore Reports from system.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Import_TableData</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
 AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
 BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
 DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
@@ -1122,14 +1138,14 @@ h0i535k0+Xcf9fFFJbO3TBnZf4Ca+Xa/cr/gs/8A8HDH7KP/AAVT/Yc1z4dQ+Cvj
 VpvjCzni1fwtqd/o2lrBYahFlR5jJqLuIpYnlifarYEm7azKtfhrQAUUUUAFFFFA
 BRRRQAUUUUAFFFFABRRRQAUUUUAf/9k=
 </FileData>
-				<FileName>Restore TableDefs from system.jpg</FileName>
-				<FileType>jpg</FileType>
-			</Images>
-		</USysRibbonImages>
-		<USysRibbonImages>
-			<ControlId>VCS_Import_TableDefs</ControlId>
-			<Images>
-				<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+<FileName>Restore TableDefs from system.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Import_TableDefs</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
 AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
 BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
 DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
@@ -1199,9 +1215,174 @@ LIdIud+ZNPl3H/XxRSWzt0wZ2X+Amvl2v3K/4LP/APBwx+yj/wAFU/2HNc+HUPgr
 41ab4ws54tX8Lanf6NpawWGoRZUeYyai7iKWJ5Yn2q2BJu2syrX4a0AFFFFABRRR
 QAUUUUAFFFFABRRRQAUUUUAFFFFAH//Z
 </FileData>
-				<FileName>Restore TableDefs from system.jpg</FileName>
-				<FileType>jpg</FileType>
-			</Images>
-		</USysRibbonImages>
-	</dataroot>
+<FileName>Restore TableDefs from system.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Import_Queries</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
+BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
+DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
+DAwMDAwMDAwMDAwMDAwMDAwMDAwMDP/AABEIAGYAcAMBIgACEQEDEQH/xAAfAAAB
+BQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0B
+AgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygp
+KjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImK
+kpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj
+5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJ
+Cgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGh
+scEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZ
+WmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1
+tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEA
+AhEDEQA/AP38orxP/goP+314B/4Jrfsxa18UviJdTx6TprLa2djahWvNZvJM+VaW
+6sQGkbaxySAqI7sQqkj8P/BH/Bav/gph/wAFcfF+tX37LvgPT/CvhPRblot+m6Zp
+s0MPRlgn1DWM28lwEZSViEZwwPlgEZiNTmk4QTdt7dPX+r6rujR0+WKnNpX2v19P
+y7X9Gf0WUV/OvH/wcG/t6f8ABJv40aL4d/bA+G9v4n0PV3MjS3Om2en3l1CuBIbG
++0//AEGVo96FkKOeVUtHvDV+837Kf7UXg39tH9nrwv8AE/4f6k2qeE/F1p9rspnT
+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
+RQAUUUUAf//Z
+</FileData>
+<FileName>Restore Queries from system.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+<USysRibbonImages>
+<ControlId>VCS_Export_Queries</ControlId>
+<Images>
+<FileData>FAAAAAEAAAAEAAAAagBwAGcAAAD/2P/gABBKRklGAAEBAQCWAJYAAP/hACJFeGlm
+AABNTQAqAAAACAABARIAAwAAAAEAAQAAAAAAAP/bAEMAAgEBAgEBAgICAgICAgID
+BQMDAwMDBgQEAwUHBgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwM
+DP/bAEMBAgICAwMDBgMDBgwIBwgMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
+DAwMDAwMDAwMDAwMDAwMDAwMDAwMDP/AABEIAGYAcAMBIgACEQEDEQH/xAAfAAAB
+BQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0B
+AgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygp
+KjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImK
+kpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj
+5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJ
+Cgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGh
+scEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZ
+WmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1
+tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEA
+AhEDEQA/AP38oorivj1+0h8P/wBlrwHJ4o+JHjPw14H8PxuIvt+tahFZwySEEiNC
+5G+QgHCLljg4BpSkkrsqMXJ2R2tFfCemf8HMX7DureJ49Ii+PGmrdSS+SJJvDusQ
+2ob1Nw9oIQv+0X2+9fZXwq+LvhX46eBbHxR4K8SaD4u8N6kC1pqmjX8V9Z3IBKts
+ljZlOGBBAPBBB5FXyS5ee2ncmTtLle/Y6Kiiv5gf+I1T9qb/AKEH4Af+CTV//lnU
+gf0/UV/MD/xGqftTf9CD8AP/AASav/8ALOj/AIjVP2pv+hB+AH/gk1f/AOWdAH9P
+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
+</FileData>
+<FileName>Save Queries to system.jpg</FileName>
+<FileType>jpg</FileType>
+</Images>
+</USysRibbonImages>
+</dataroot>
 </root>

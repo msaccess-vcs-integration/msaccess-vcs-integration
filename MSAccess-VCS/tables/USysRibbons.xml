@@ -59,6 +59,10 @@
 	  &lt;mso:button id="VCS_Import_TableData" label="Import Table Data" screentip="Import all table data from source" size="large" getImage="getImages" tag="vcs.import.tabledata" onAction="VCS_ImportAllTableData" visible="true"/&gt;
 	  &lt;mso:button id="VCS_Export_TableData" label="Export Table Data" screentip="Export all table data to source" size="large" getImage="getImages" tag="vcs.export.tabledata" onAction="VCS_ExportAllTableData" visible="true"/&gt;
 	&lt;/mso:group&gt;
+	&lt;mso:group id="mso_c9.2E5FF7F0" label="Queries" imageMso="ControlsGallery" autoScale="true"&gt;
+	  &lt;mso:button id="VCS_Import_Queries" label="Import Queries" screentip="Import all forms from source" size="large" getImage="getImages" tag="vcs.import.forms" onAction="VCS_ImportAllQueries" visible="true"/&gt;
+	  &lt;mso:button id="VCS_Export_Queries" label="Export Queries" screentip="Export all forms to source" size="large" getImage="getImages" tag="vcs.export.forms" onAction="VCS_ExportAllQueries" visible="true"/&gt;
+	&lt;/mso:group&gt;
 	&lt;mso:group id="mso_c6.2E5FF7F0" label="Forms" imageMso="ControlsGallery" autoScale="true"&gt;
 	  &lt;mso:button id="VCS_Import_Forms" label="Import Forms" screentip="Import all forms from source" size="large" getImage="getImages" tag="vcs.import.forms" onAction="VCS_ImportAllForms" visible="true"/&gt;
 	  &lt;mso:button id="VCS_Export_Forms" label="Export Forms" screentip="Export all forms to source" size="large" getImage="getImages" tag="vcs.export.forms" onAction="VCS_ExportAllForms" visible="true"/&gt;
