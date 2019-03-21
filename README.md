@@ -58,10 +58,13 @@ Configuration
 There are a number of configurations you can define for your database.  These are done in the [vcs.cfg](MSAccess-VCS/vcs.cfg) file located at the same level as your database.
 1. Define the tables to you want to export data for.
    By default no table data is exported.  You can change this by specifying a list of tables in the `IncludeTables` variable.
-   For example you might have "Countries" or "Colors" tables that populate dropdown lists. You shouldn't include regular data tables containing actual records, because this data doesn't belong in version control.
-   You can also specify `*` to export all tables, but you should consider if this is relevant for version control.
-2. You can control which data types are exported by setting the `Export{data type}` variable to true or false for each of the data types.
+   For example you might have "Countries" or "Colors" tables that populate dropdown lists.  You would export these by setting `IncludeTables=Countries Colors`.
+   You shouldn't include regular data tables containing actual records, because this data doesn't belong in version control.
+   You could also specify `IncludeTables=*` to export all tables, but you should consider if this is relevant for version control.
+2. You can control which data types are exported by setting the `Export{data type}=[True|False]` variable to true or false for each of the data types.
    Valid data types:  Reports, Queries, Forms, Modules, Tables.
+3. By default queries are exported as SQL.  You can convert back to the old model which is more like code by setting `HandleQueriesAsSQL=False`.
+4. You can turn on the export of the VCS_* modules (this is off by default).  To do this set `ArchiveMyself=True`
 
 Supplied databases
 ------------------
