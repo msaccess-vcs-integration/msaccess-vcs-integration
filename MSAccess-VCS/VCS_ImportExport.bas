@@ -857,7 +857,7 @@ Private Function StrSetToCol(ByVal strSet As String, ByVal delimiter As String) 
     
     Dim strPart As Variant
     For Each strPart In strSetArray
-        col.Add strPart, strPart
+        col.Add Trim(strPart), Trim(strPart)
     Next
     
     Set StrSetToCol = col
