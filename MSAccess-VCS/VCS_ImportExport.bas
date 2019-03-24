@@ -114,10 +114,7 @@ Public Sub VCS_ImportAllTableData()
     ImportAllTableDataMacros
 End Sub
 
-
 'returns true if named module is NOT part of the VCS code
-      moduleName <> "VCS_Button_Functions" And _
-      moduleName <> "VCS_JsonConverter" Then
 Private Function IsNotVCS(ByVal moduleName As String) As Boolean
     If moduleName <> "VCS_ImportExport" And _
       moduleName <> "VCS_IE_Functions" And _
@@ -134,7 +131,7 @@ Private Function IsNotVCS(ByVal moduleName As String) As Boolean
       moduleName <> "VCS_IniHandler" And _
       moduleName <> "VCS_JsonConverter" And _
       moduleName <> "VCS_USysRibbonImages" And _
-      moduleName <> "VCS_Button_Functions" Then
+      moduleName <> "VCS_JsonConverter" Then
         IsNotVCS = True
     Else
         IsNotVCS = False
