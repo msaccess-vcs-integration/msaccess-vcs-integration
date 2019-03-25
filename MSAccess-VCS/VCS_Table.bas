@@ -134,13 +134,19 @@ Public Sub VCS_ExportTableDef(ByVal TableName As String, ByVal directory As Stri
             Set oOtherField = Nothing
             
             On Error Resume Next
-            Set oOtherField = oTemplateTblDef.Fields(oField.name)
+            Set oOtherField = oTemplateTblDef.Fields(oField.Name)
             
             If oOtherField Is Nothing Then
-                iFieldIndex = iFieldIndex + 1
-                Debug.Print "Missing Field[" & oField.name & "] @" & iFieldIndex & " from Table[" & oTemplateTblDef.name & "]"
-                Set oOtherField = oTemplateTblDef.CreateField(oField.name, oField.Type, oField.Size)
-                InsertTableField oTemplateTblDef, oOtherField, iFieldIndex
+            
+                If VCS_UpdateTemplateTable Then
+                    iFieldIndex = iFieldIndex + 1
+                    Debug.Print "Adding missing Field[" & oField.Name & "] @" & iFieldIndex & " from Table[" & oTemplateTblDef.Name & "]"
+                    Set oOtherField = oTemplateTblDef.CreateField(oField.Name, oField.Type, oField.Size)
+                    InsertTableField oTemplateTblDef, oOtherField, iFieldIndex
+                Else
+                    ' Not updating template, but extra fields exist.
+                    Debug.Print "WARNING:  Template Table[" & oTemplateTblDef.Name & "] is missing Field[" & oField.Name & "]"
+                End If
                 
             Else
                 iFieldIndex = oOtherField.OrdinalPosition
@@ -156,10 +162,14 @@ Public Sub VCS_ExportTableDef(ByVal TableName As String, ByVal directory As Stri
             Set oOtherIndex = Nothing
             
             On Error Resume Next
-            Set oOtherIndex = oTemplateTblDef.Indexes(oIndex.name)
+            Set oOtherIndex = oTemplateTblDef.Indexes(oIndex.Name)
             
             If oOtherIndex Is Nothing Then
-                Debug.Print "Missing index[" & oIndex.name & "] from Table[" & oTemplateTblDef.name & "]"
+                If VCS_UpdateTemplateTable Then
+                    ' TODO:  Implement index copy.
+                Else
+                    Debug.Print "WARNING:  Template Table[" & oTemplateTblDef.Name & "] is missing index[" & oIndex.Name & "]"
+                End If
             End If
             
         Next oIndex
@@ -170,10 +180,10 @@ Public Sub VCS_ExportTableDef(ByVal TableName As String, ByVal directory As Stri
             Set oOtherIndex = Nothing
             
             On Error Resume Next
-            Set oOtherIndex = oTblDef.Indexes(oIndex.name)
+            Set oOtherIndex = oTblDef.Indexes(oIndex.Name)
             
             If oOtherIndex Is Nothing Then
-                oIndexesDict(oIndex.name) = True
+                oIndexesDict(oIndex.Name) = True
             End If
             
         Next oIndex
@@ -186,10 +196,10 @@ Public Sub VCS_ExportTableDef(ByVal TableName As String, ByVal directory As Stri
             Set oOtherField = Nothing
             
             On Error Resume Next
-            Set oOtherField = oTblDef.Fields(oField.name)
+            Set oOtherField = oTblDef.Fields(oField.Name)
             
             If oOtherField Is Nothing Then
-                oFieldsDict(oField.name) = True
+                oFieldsDict(oField.Name) = True
             End If
             
         Next oField
@@ -228,7 +238,7 @@ End Sub
 '
 ' RETURNS: True (it exists) or False (it does not exist).
 Private Function TableExists(ByVal TName As String) As Boolean
-    Dim Db As DAO.Database
+    Dim db As DAO.Database
     Dim Found As Boolean
     Dim Test As String
     
@@ -236,13 +246,13 @@ Private Function TableExists(ByVal TName As String) As Boolean
     
     ' Assume the table or query does not exist.
     Found = False
-    Set Db = CurrentDb()
+    Set db = CurrentDb()
     
     ' Trap for any errors.
     On Error Resume Next
      
     ' See if the name is in the Tables collection.
-    Test = Db.TableDefs(TName).name
+    Test = db.TableDefs(TName).Name
     If Err.Number <> NAME_NOT_IN_COLLECTION Then Found = True
     
     ' Reset the error variable.
@@ -386,7 +396,7 @@ Err_CreateLinkedTable_Fin:
     Fields = InFile.ReadLine()
     Dim vField As Variant
     Dim SQL As String
-    SQL = "CREATE INDEX __uniqueindex ON " & td.name & " ("
+    SQL = "CREATE INDEX __uniqueindex ON " & td.Name & " ("
     
     For Each vField In Split(Fields, ";+")
         SQL = SQL & "[" & vField & "]" & ","
@@ -404,7 +414,7 @@ Err_LinkPK_Fin:
 End Sub
 
 ' Import Table Definition
-Public Sub VCS_ImportTableDef(ByVal tblName As String, ByVal directory As String)
+Public Sub VCS_ImportTableDef(ByVal tblName As String, ByVal directory As String, Optional ByVal exclude_templates As Boolean = False)
     Dim filePath As String
     Dim tbl As Object
     Dim prefix As String
@@ -414,6 +424,10 @@ Public Sub VCS_ImportTableDef(ByVal tblName As String, ByVal directory As String
     Dim db As Database
     
     Set db = CurrentDb
+    
+    If exclude_templates And VCS_FileExists(directory & tblName & ".json") Then
+        Exit Sub
+    End If
 
     ' Drop table first.
     On Error GoTo Err_MissingTable
@@ -444,7 +458,12 @@ Public Sub VCS_ImportTableDef(ByVal tblName As String, ByVal directory As String
         ' each item in "values" is parsed as Dictionary
         Set Parsed = VCS_JsonConverter.ParseJson(JsonText)
         
+        If Not TableExists(Parsed("Template")) Then
+            VCS_ImportTableDef Parsed("Template"), directory
+        End If
+        
         DoCmd.CopyObject , tblName, acTable, Parsed("Template")
+        db.TableDefs.Refresh
         If Parsed.Exists("DropIndexes") Then
             For Each vVal In Parsed("DropIndexes")
                 db.TableDefs(tblName).Indexes.Delete vVal
@@ -498,4 +517,5 @@ Public Sub VCS_ImportTableData(ByVal tblName As String, ByVal obj_path As String
     Application.ImportXML DataSource:=obj_path, ImportOptions:=acAppendData
 
 End Sub
+
 

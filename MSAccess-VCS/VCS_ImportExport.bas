@@ -22,37 +22,84 @@ Private ExportModules As Boolean
 Private ExportTables As Boolean
 'export/import all Queries as plain SQL text
 Private HandleQueriesAsSQL As Boolean
+' Whether to update template table with missing fields added to child.
+Private UpdateTemplateTable As Boolean
+
+Public Function VCS_DoExportReports() As Boolean
+    LoadCustomisations
+    VCS_DoExportReports = ExportReports
+End Function
+
+Public Function VCS_DoExportQueries() As Boolean
+    LoadCustomisations
+    VCS_DoExportQueries = ExportQueries
+End Function
+
+Public Function VCS_DoExportForms() As Boolean
+    LoadCustomisations
+    VCS_DoExportForms = ExportForms
+End Function
+
+Public Function VCS_DoExportMacros() As Boolean
+    LoadCustomisations
+    VCS_DoExportMacros = ExportMacros
+End Function
+
+Public Function VCS_DoExportModules() As Boolean
+    LoadCustomisations
+    VCS_DoExportModules = ExportModules
+End Function
+
+Public Function VCS_DoExportTables() As Boolean
+    LoadCustomisations
+    VCS_DoExportTables = ExportTables
+End Function
+
+Public Function VCS_HandleQueriesAsSQL() As Boolean
+    LoadCustomisations
+    VCS_HandleQueriesAsSQL = HandleQueriesAsSQL
+End Function
+
+Public Function VCS_UpdateTemplateTable() As Boolean
+    LoadCustomisations
+    VCS_UpdateTemplateTable = UpdateTemplateTable
+End Function
+
 
 Private Function StrToBool(ByVal sStr As String, ByVal default As Boolean)
     StrToBool = default
 
     sStr = LCase(sStr)
-    If sStr = "yes" OR sStr = "true" Then
+    If sStr = "yes" Or sStr = "true" Then
         StrToBool = True
     Else
-        If sStr = "no" OR sStr = "false" Then
+        If sStr = "no" Or sStr = "false" Then
             StrToBool = False
         End If
     End If
 End Function
 
 Public Sub LoadCustomisations()
+    Dim bLoaded As Boolean
     Dim sValue As String
     Dim path As String
 
-    path = VCS_Dir.VCS_ProjectPath()
+    If Not bLoaded Then
+        path = VCS_Dir.VCS_ProjectPath()
 
-    ' Load configuration items
-    ArchiveMyself = StrToBool(GetSectionEntry("Config", "ArchiveMyself", path & "vcs.cfg"), False)
-    INCLUDE_TABLES = GetSectionEntry("Config", "IncludeTables", path & "vcs.cfg")
-    DebugOutput = StrToBool(GetSectionEntry("Config", "DebugOutput", path & "vcs.cfg"), False)
-    ExportReports = StrToBool(GetSectionEntry("Config", "ExportReports", path & "vcs.cfg"), True)
-    ExportForms = StrToBool(GetSectionEntry("Config", "ExportForms", path & "vcs.cfg"), True)
-    ExportQueries = StrToBool(GetSectionEntry("Config", "ExportQueries", path & "vcs.cfg"), True)
-    ExportMacros = StrToBool(GetSectionEntry("Config", "ExportMacros", path & "vcs.cfg"), True)
-    ExportModules = StrToBool(GetSectionEntry("Config", "ExportModules", path & "vcs.cfg"), True)
-    ExportTables = StrToBool(GetSectionEntry("Config", "ExportTables", path & "vcs.cfg"), True)
-    HandleQueriesAsSQL = StrToBool(GetSectionEntry("Config", "HandleQueriesAsSQL", path & "vcs.cfg"), True)
+        ' Load configuration items
+        ArchiveMyself = StrToBool(GetSectionEntry("Config", "ArchiveMyself", path & "vcs.cfg"), False)
+        INCLUDE_TABLES = GetSectionEntry("Config", "IncludeTables", path & "vcs.cfg")
+        DebugOutput = StrToBool(GetSectionEntry("Config", "DebugOutput", path & "vcs.cfg"), False)
+        ExportReports = StrToBool(GetSectionEntry("Config", "ExportReports", path & "vcs.cfg"), True)
+        ExportForms = StrToBool(GetSectionEntry("Config", "ExportForms", path & "vcs.cfg"), True)
+        ExportQueries = StrToBool(GetSectionEntry("Config", "ExportQueries", path & "vcs.cfg"), True)
+        ExportMacros = StrToBool(GetSectionEntry("Config", "ExportMacros", path & "vcs.cfg"), True)
+        ExportModules = StrToBool(GetSectionEntry("Config", "ExportModules", path & "vcs.cfg"), True)
+        ExportTables = StrToBool(GetSectionEntry("Config", "ExportTables", path & "vcs.cfg"), True)
+        HandleQueriesAsSQL = StrToBool(GetSectionEntry("Config", "HandleQueriesAsSQL", path & "vcs.cfg"), True)
+        UpdateTemplateTable = StrToBool(GetSectionEntry("Config", "UpdateTemplateTable", path & "vcs.cfg"), False)
+    End If
     
 End Sub
 
@@ -141,7 +188,7 @@ End Function
 
 Public Sub ExportObjTypeSource(ByVal obj_type As Variant)
     Dim doc As Object ' DAO.Document
-    Dim Db As Object
+    Dim db As Object
     Dim ucs2 As Boolean
     Dim obj_type_split() As String
     Dim obj_type_label As String
@@ -150,7 +197,7 @@ Public Sub ExportObjTypeSource(ByVal obj_type As Variant)
     Dim obj_path As String
     Dim obj_count As Integer
 
-    Set Db = CurrentDb
+    Set db = CurrentDb
     
     obj_type_split = Split(obj_type, "|")
     obj_type_label = obj_type_split(0)
@@ -159,27 +206,27 @@ Public Sub ExportObjTypeSource(ByVal obj_type As Variant)
     obj_path = VCS_SourcePath & obj_type_label & "\"
     obj_count = 0
                 
-    If (obj_type_label = "forms" And ExportForms) _
-       Or (obj_type_label = "reports" And ExportReports) _
-       Or (obj_type_label = "macros" And ExportMacros) _
-       Or (obj_type_label = "modules" And ExportModules) Then
+    If (obj_type_label = "forms" And VCS_DoExportForms) _
+       Or (obj_type_label = "reports" And VCS_DoExportReports) _
+       Or (obj_type_label = "macros" And VCS_DoExportMacros) _
+       Or (obj_type_label = "modules" And VCS_DoExportModules) Then
 
         VCS_Dir.VCS_ClearTextFilesFromDir obj_path, "bas"
         Debug.Print VCS_String.VCS_PadRight("Exporting " & obj_type_label & "...", 24)
-        SysCmd acSysCmdInitMeter, "Exporting " & obj_type_label, Db.Containers(obj_type_name).Documents.Count
-        For Each doc In Db.Containers(obj_type_name).Documents
+        SysCmd acSysCmdInitMeter, "Exporting " & obj_type_label, db.Containers(obj_type_name).Documents.Count
+        For Each doc In db.Containers(obj_type_name).Documents
             DoEvents
-            If (Left$(doc.name, 1) <> "~") And _
-               (IsNotVCS(doc.name) Or ArchiveMyself) Then
+            If (Left$(doc.Name, 1) <> "~") And _
+               (IsNotVCS(doc.Name) Or ArchiveMyself) Then
                 If obj_type_label = "modules" Then
                     ucs2 = False
                 Else
                     ucs2 = VCS_File.VCS_UsingUcs2
                 End If
-                VCS_IE_Functions.VCS_ExportObject obj_type_num, doc.name, obj_path & doc.name & ".bas", ucs2
+                VCS_IE_Functions.VCS_ExportObject obj_type_num, doc.Name, obj_path & doc.Name & ".bas", ucs2
                 
                 If obj_type_label = "reports" Then
-                    VCS_Report.VCS_ExportPrintVars doc.name, obj_path & doc.name & ".pv"
+                    VCS_Report.VCS_ExportPrintVars doc.Name, obj_path & doc.Name & ".pv"
                 End If
                 
                 obj_count = obj_count + 1
@@ -197,7 +244,7 @@ Public Sub ExportObjTypeSource(ByVal obj_type As Variant)
         Debug.Print "[" & obj_count & "]"
     End If
 
-    If (obj_type_label = "modules" And ExportModules) Then
+    If (obj_type_label = "modules" And VCS_DoExportModules) Then
         VCS_Reference.VCS_ExportReferences VCS_SourcePath
     End If
 End Sub
@@ -219,7 +266,7 @@ Public Sub ExportAllMacros()
 End Sub
 
 Public Sub ExportAllTables(Optional ByVal doTableDefs As Boolean = True, Optional ByVal doTableData As Boolean = True)
-    Dim Db As Object ' DAO.Database
+    Dim db As Object ' DAO.Database
     Dim source_path As String
     Dim obj_path As String
     Dim qry As Object ' DAO.QueryDef
@@ -233,16 +280,16 @@ Public Sub ExportAllTables(Optional ByVal doTableDefs As Boolean = True, Optiona
     Dim obj_data_count As Integer
     Dim ucs2 As Boolean
 
-    Set Db = CurrentDb
+    Set db = CurrentDb
     source_path = VCS_SourcePath
-    If ExportTables Then
+    If VCS_DoExportTables Then
         obj_path = source_path & "tables\"
         VCS_Dir.VCS_MkDirIfNotExist Left$(obj_path, InStrRev(obj_path, "\"))
         VCS_Dir.VCS_ClearTextFilesFromDir obj_path, "txt"
                 
         Dim td As DAO.TableDef
         Dim tds As DAO.TableDefs
-        Set tds = Db.TableDefs
+        Set tds = db.TableDefs
 
         obj_type_label = "tbldef"
         obj_type_name = "Table_Def"
@@ -273,16 +320,16 @@ Public Sub ExportAllTables(Optional ByVal doTableDefs As Boolean = True, Optiona
                     DoEvents
                     ' This is not a system table
                     ' this is not a temporary table
-                    If Left$(td.name, 4) <> "MSys" And Left$(td.name, 4) <> "USys" And _
-                       Left$(td.name, 1) <> "~" Then
+                    If Left$(td.Name, 4) <> "MSys" And Left$(td.Name, 4) <> "USys" And _
+                       Left$(td.Name, 1) <> "~" Then
                         If doTableDefs Then
-                            VCS_Table.VCS_ExportTableDef td.name, obj_path
+                            VCS_Table.VCS_ExportTableDef td.Name, obj_path
                         End If
 
                         If doTableData Then
-                            VCS_Table.VCS_ExportTableData CStr(td.name), source_path & "tables\"
+                            VCS_Table.VCS_ExportTableData CStr(td.Name), source_path & "tables\"
                         End If
-                        If Len(Dir$(source_path & "tables\" & td.name & ".txt")) > 0 Then
+                        If Len(Dir$(source_path & "tables\" & td.Name & ".txt")) > 0 Then
                             obj_data_count = obj_data_count + 1
                         End If
                     End If
@@ -290,9 +337,9 @@ Public Sub ExportAllTables(Optional ByVal doTableDefs As Boolean = True, Optiona
                 ElseIf (Len(Replace(INCLUDE_TABLES, " ", vbNullString)) > 0) And INCLUDE_TABLES <> "*" Then
                     DoEvents
                     On Error GoTo Err_TableNotFound
-                    If InCollection(IncludeTablesCol, td.name) Then
+                    If InCollection(IncludeTablesCol, td.Name) Then
                         If doTableData Then
-                            VCS_Table.VCS_ExportTableData CStr(td.name), source_path & "tables\"
+                            VCS_Table.VCS_ExportTableData CStr(td.Name), source_path & "tables\"
                             obj_data_count = obj_data_count + 1
                         End If
                     End If
@@ -302,7 +349,7 @@ Err_TableNotFound:
                 End If
             Else
                 If doTableDefs Then
-                    VCS_Table.VCS_ExportLinkedTable td.name, obj_path
+                    VCS_Table.VCS_ExportLinkedTable td.Name, obj_path
                 End If
             End If
                                 
@@ -326,12 +373,12 @@ Err_TableNotFound:
         For Each aRelation In CurrentDb.Relations
             ' Exclude relations from system tables and inherited (linked) relations
             ' Skip if dbRelationDontEnforce property is not set. The relationship is already in the table xml file. - sean
-            If Not (aRelation.name = "MSysNavPaneGroupsMSysNavPaneGroupToObjects" _
-                    Or aRelation.name = "MSysNavPaneGroupCategoriesMSysNavPaneGroups" _
+            If Not (aRelation.Name = "MSysNavPaneGroupsMSysNavPaneGroupToObjects" _
+                    Or aRelation.Name = "MSysNavPaneGroupCategoriesMSysNavPaneGroups" _
                     Or (aRelation.Attributes And DAO.RelationAttributeEnum.dbRelationInherited) = _
                     DAO.RelationAttributeEnum.dbRelationInherited) _
                And (aRelation.Attributes = DAO.RelationAttributeEnum.dbRelationDontEnforce) Then
-                VCS_Relation.VCS_ExportRelation aRelation, obj_path & aRelation.name & ".txt"
+                VCS_Relation.VCS_ExportRelation aRelation, obj_path & aRelation.Name & ".txt"
                 obj_count = obj_count + 1
             End If
         Next
@@ -343,7 +390,7 @@ End Sub
 ' macros, modules, and lookup tables to `source` folder under the
 ' database's folder.
 Public Sub ExportAllSource()
-    Dim Db As Object ' DAO.Database
+    Dim db As Object ' DAO.Database
     Dim source_path As String
     Dim obj_path As String
     Dim doc As Object ' DAO.Document
@@ -415,7 +462,7 @@ Public Function ImportObjType(ByVal fileName As String, ByVal obj_type_label As 
 End Function
 
 Public Sub ImportObjTypeSource(ByVal obj_type As Variant, Optional ByVal ignoreVCS As Boolean = True, Optional ByVal src_path As String)
-    Dim Db As Object ' DAO.Database
+    Dim db As Object ' DAO.Database
     Dim ucs2 As Boolean
     Dim obj_type_split() As String
     Dim obj_type_label As String
@@ -480,7 +527,7 @@ Public Sub ImportAllMacros(Optional ByVal ignoreVCS As Boolean = True)
     ImportObjTypeSource "macros|" & acMacro, ignoreVCS
 End Sub
 
-Public Sub ImportTableDef(ByVal fileName As String, Optional ByVal src_path As String)
+Public Sub ImportTableDef(ByVal fileName As String, Optional ByVal src_path As String, Optional ByVal exclude_templates As Boolean = False)
     Dim obj_name As String
     Dim obj_path As String
 
@@ -493,7 +540,7 @@ Public Sub ImportTableDef(ByVal fileName As String, Optional ByVal src_path As S
         Debug.Print "  [debug] table " & obj_name;
         Debug.Print
     End If
-    VCS_Table.VCS_ImportTableDef CStr(obj_name), obj_path
+    VCS_Table.VCS_ImportTableDef CStr(obj_name), obj_path, exclude_templates
 End Sub
 
 Public Sub ImportAllTableDefs(Optional ByVal src_path As String)
@@ -510,6 +557,27 @@ Public Sub ImportAllTableDefs(Optional ByVal src_path As String)
     If Len(fileName) > 0 Then
         Debug.Print VCS_String.VCS_PadRight("Importing tabledefs...", 24);
         SysCmd acSysCmdInitMeter, "Importing tabledefs", 100
+        obj_count = 0
+        Do Until Len(fileName) = 0
+            If DebugOutput Then
+                If obj_count = 0 Then
+                    Debug.Print
+                End If
+            End If
+            ImportTableDef fileName, src_path, exclude_templates:=True
+            obj_count = obj_count + 1
+            fileName = Dir$()
+            SysCmd acSysCmdUpdateMeter, obj_count
+        Loop
+        SysCmd acSysCmdRemoveMeter
+        Debug.Print "[" & obj_count & "]"
+    End If
+
+    ' Process template tables.
+    fileName = Dir$(obj_path & "*.json")
+    If Len(fileName) > 0 Then
+        Debug.Print VCS_String.VCS_PadRight("Importing tabledefs...", 24);
+        SysCmd acSysCmdInitMeter, "Importing template tabledefs", 100
         obj_count = 0
         Do Until Len(fileName) = 0
             If DebugOutput Then
@@ -737,8 +805,8 @@ Public Sub ImportProject()
         Exit Sub
     End If
 
-    Dim Db As DAO.Database
-    Set Db = CurrentDb
+    Dim db As DAO.Database
+    Set db = CurrentDb
     CloseFormsReports
 
     Debug.Print
@@ -747,9 +815,9 @@ Public Sub ImportProject()
     
     Dim rel As DAO.Relation
     For Each rel In CurrentDb.Relations
-        If Not (rel.name = "MSysNavPaneGroupsMSysNavPaneGroupToObjects" Or _
-                rel.name = "MSysNavPaneGroupCategoriesMSysNavPaneGroups") Then
-            CurrentDb.Relations.Delete (rel.name)
+        If Not (rel.Name = "MSysNavPaneGroupsMSysNavPaneGroupToObjects" Or _
+                rel.Name = "MSysNavPaneGroupCategoriesMSysNavPaneGroups") Then
+            CurrentDb.Relations.Delete (rel.Name)
         End If
     Next
         
@@ -760,24 +828,24 @@ Public Sub ImportProject()
     Dim qryName As Variant
     
     Dim dbObject As Object
-    For Each dbObject In Db.QueryDefs
+    For Each dbObject In db.QueryDefs
         DoEvents
-        If Left$(dbObject.name, 1) <> "~" Then
+        If Left$(dbObject.Name, 1) <> "~" Then
             toBeDeleted.Add dbObject.Name
         End If
     Next
         
         For Each qryName In toBeDeleted
-        Db.QueryDefs.Delete qryName
+        db.QueryDefs.Delete qryName
     Next
         
         Set toBeDeleted = Nothing
     
     Dim td As DAO.TableDef
     For Each td In CurrentDb.TableDefs
-        If Left$(td.name, 4) <> "MSys" And Left$(td.name, 4) <> "USys" And _
-           Left$(td.name, 1) <> "~" Then
-            CurrentDb.TableDefs.Delete (td.name)
+        If Left$(td.Name, 4) <> "MSys" And Left$(td.Name, 4) <> "USys" And _
+           Left$(td.Name, 1) <> "~" Then
+            CurrentDb.TableDefs.Delete (td.Name)
         End If
     Next
 
@@ -798,12 +866,12 @@ Public Sub ImportProject()
                               )
         objTypeArray = Split(objType, "|")
         DoEvents
-        For Each doc In Db.Containers(objTypeArray(OTNAME)).Documents
+        For Each doc In db.Containers(objTypeArray(OTNAME)).Documents
             DoEvents
-            If (Left$(doc.name, 1) <> "~") And _
-               (IsNotVCS(doc.name)) Then
+            If (Left$(doc.Name, 1) <> "~") And _
+               (IsNotVCS(doc.Name)) Then
                 '                Debug.Print doc.Name
-                DoCmd.DeleteObject objTypeArray(OTID), doc.name
+                DoCmd.DeleteObject objTypeArray(OTID), doc.Name
             End If
         Next
     Next
@@ -914,21 +982,21 @@ End Function
 Public Sub ShowTablesWithData()
     Dim tbl As TableDef
     For Each tbl In CurrentDb.TableDefs
-      If Left(tbl.name, 4) <> "mSys" And tbl.RecordCount > 0 Then
-        Debug.Print tbl.name, tbl.RecordCount
+      If Left(tbl.Name, 4) <> "mSys" And tbl.RecordCount > 0 Then
+        Debug.Print tbl.Name, tbl.RecordCount
       End If
     Next tbl
 End Sub
 
 Public Sub ExportAllQueries()
-    Dim Db As Object ' DAO.Database
+    Dim db As Object ' DAO.Database
     Dim source_path As String
     Dim obj_path As String
     Dim qry As Object ' DAO.QueryDef
     Dim obj_count As Integer
     Dim sExtension As String
 
-    If HandleQueriesAsSQL Then
+    If VCS_HandleQueriesAsSQL Then
         sExtension = "sql"
     Else
         sExtension = "bas"
@@ -939,19 +1007,19 @@ Public Sub ExportAllQueries()
     source_path = VCS_Dir.VCS_ProjectPath() & "source\"
     VCS_Dir.VCS_MkDirIfNotExist source_path
 
-    If ExportQueries Then
+    If VCS_DoExportQueries Then
         obj_path = source_path & "queries\"
         VCS_Dir.VCS_ClearTextFilesFromDir obj_path, sExtension
         Debug.Print VCS_String.VCS_PadRight("Exporting queries...", 24);
-        SysCmd acSysCmdInitMeter, "Exporting queries", Db.QueryDefs.Count + 1
+        SysCmd acSysCmdInitMeter, "Exporting queries", db.QueryDefs.Count + 1
         obj_count = 0
-        For Each qry In Db.QueryDefs
+        For Each qry In db.QueryDefs
             DoEvents
-            If Left$(qry.name, 1) <> "~" Then
-                If HandleQueriesAsSQL Then
-                    VCS_Query.ExportQueryAsSQL qry, obj_path & qry.name & "." & sExtension, False
+            If Left$(qry.Name, 1) <> "~" Then
+                If VCS_HandleQueriesAsSQL Then
+                    VCS_Query.ExportQueryAsSQL qry, obj_path & qry.Name & "." & sExtension, False
                 Else
-                    VCS_IE_Functions.VCS_ExportObject acQuery, qry.name, obj_path & qry.name & "." & sExtension, VCS_File.VCS_UsingUcs2
+                    VCS_IE_Functions.VCS_ExportObject acQuery, qry.Name, obj_path & qry.Name & "." & sExtension, VCS_File.VCS_UsingUcs2
                 End If
                 obj_count = obj_count + 1
             End If
@@ -985,7 +1053,7 @@ Public Sub ImportAllQueries()
     Dim obj_count As Integer
     Dim sExtension As String
 
-    If HandleQueriesAsSQL Then
+    If VCS_HandleQueriesAsSQL Then
         sExtension = "sql"
     Else
         sExtension = "bas"
@@ -1007,13 +1075,13 @@ Public Sub ImportAllQueries()
             DoEvents
             obj_name = Mid$(fileName, 1, InStrRev(fileName, ".") - 1)
             'Check for plain sql export/import
-            if HandleQueriesAsSQL then
+            If VCS_HandleQueriesAsSQL Then
                 VCS_Query.ImportQueryFromSQL obj_name, obj_path & fileName, False
             Else
                 VCS_IE_Functions.VCS_ImportObject acQuery, obj_name, obj_path & fileName, VCS_File.VCS_UsingUcs2
                 VCS_IE_Functions.VCS_ExportObject acQuery, obj_name, tempFilePath, VCS_File.VCS_UsingUcs2
                 VCS_IE_Functions.VCS_ImportObject acQuery, obj_name, tempFilePath, VCS_File.VCS_UsingUcs2
-            End if          
+            End If
             obj_count = obj_count + 1
             fileName = Dir$()
             SysCmd acSysCmdUpdateMeter, obj_count
@@ -1024,3 +1092,4 @@ Public Sub ImportAllQueries()
     
     VCS_Dir.VCS_DelIfExist tempFilePath
 End Sub
+
