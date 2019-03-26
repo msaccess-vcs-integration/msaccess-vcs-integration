@@ -102,12 +102,10 @@ Public Sub displayFormVersion()
 End Sub
 
 Public Sub VCS_ImportAllSource()
-    VCS_LoadStub
     VCS_LoadAllSource
 End Sub
 
 Public Sub VCS_ImportAllModules()
-    VCS_LoadStub
     VCS_LoadModules
 End Sub
 
