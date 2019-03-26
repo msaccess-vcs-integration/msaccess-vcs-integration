@@ -1,0 +1,34 @@
+<mso:cmd app="Access" dt="0" />
+<mso:customUI
+    xmlns:mso="http://schemas.microsoft.com/office/2009/07/customui">
+  <mso:ribbon>
+    <mso:qat/>
+    <mso:tabs>
+      <mso:tab id="mso_c2.2E5FF7F0" label="VCS">
+	<mso:group id="mso_c3.2E5FF7F0" label="All" autoScale="true">
+	  <mso:button id="VCS_Import" label="Import Source" screentip="Import all tables, data, modules, etc. from source" size="large" imageMso="ImportSavedImports" tag="vcs.import" onAction="VCS_ImportAllSource" visible="true"/>
+	  <mso:button id="VCS_Export" label="Export Source" screentip="Export all tables, data, modules, etc. to source" size="large" imageMso="SaveAll" tag="vcs.export" onAction="VCS_ExportAllSource" visible="true"/>
+	  <mso:button id="VCS_Load" label="Load VCS Source" screentip="Load the VCS source files" size="large" imageMso="SourceControlCheckIn" tag="vcs.load" onAction="loadVCS" visible="true"/>
+	</mso:group>
+	<mso:group id="mso_c4.2E5FF7F0" label="Import" imageMso="ControlsGallery" autoScale="true">
+	  <mso:button id="VCS_Import_Modules" label="Import Modules" screentip="Import all modules from source" size="large" imageMso="CreateModule" tag="vcs.import.modules" onAction="VCS_ImportAllModules" visible="true"/>
+	  <mso:button id="VCS_Import_TableDefs" label="Import Table Defs" screentip="Import all table definitions from source" size="large" imageMso="TableInsert" tag="vcs.import.tabledefs" onAction="VCS_ImportAllTableDefs" visible="true"/>
+	  <mso:button id="VCS_Import_TableData" label="Import Table Data" screentip="Import all table data from source" size="large" imageMso="ImportXmlFile" tag="vcs.import.tabledata" onAction="VCS_ImportAllTableData" visible="true"/>
+	  <mso:button id="VCS_Import_Queries" label="Import Queries" screentip="Import all forms from source" size="large" imageMso="DatabaseQueryNew" tag="vcs.import.forms" onAction="VCS_ImportAllQueries" visible="true"/>
+	  <mso:button id="VCS_Import_Forms" label="Import Forms" screentip="Import all forms from source" size="large" imageMso="CreateForm" tag="vcs.import.forms" onAction="VCS_ImportAllForms" visible="true"/>
+	  <mso:button id="VCS_Import_Reports" label="Import Reports" screentip="Import all reports from source" size="large" imageMso="CreateReport" tag="vcs.import.reports" onAction="VCS_ImportAllReports" visible="true"/>
+	  <mso:button id="VCS_Import_Macros" label="Import Macros" screentip="Import all macros from source" size="large" imageMso="CreateMacro" tag="vcs.import.macros" onAction="VCS_ImportAllMacros" visible="true"/>
+	</mso:group>
+	<mso:group id="mso_c5.2E5FF7F0" label="Export" imageMso="ControlsGallery" autoScale="true">
+	  <mso:button id="VCS_Export_Modules" label="Export Modules" screentip="Export all modules to source" size="large" imageMso="CreateModule" tag="vcs.export.modules" onAction="VCS_ExportAllModules" visible="true"/>
+	  <mso:button id="VCS_Export_TableDefs" label="Export Table Defs" screentip="Export all table definitions to source" size="large" imageMso="TableExportMenu" tag="vcs.export.tabledefs" onAction="VCS_ExportAllTableDefs" visible="true"/>
+	  <mso:button id="VCS_Export_TableData" label="Export Table Data" screentip="Export all table data to source" size="large" imageMso="ExportXmlFile" tag="vcs.export.tabledata" onAction="VCS_ExportAllTableData" visible="true"/>
+	  <mso:button id="VCS_Export_Queries" label="Export Queries" screentip="Export all forms to source" size="large" imageMso="DatabaseQueryNew" tag="vcs.export.forms" onAction="VCS_ExportAllQueries" visible="true"/>
+	  <mso:button id="VCS_Export_Forms" label="Export Forms" screentip="Export all forms to source" size="large" imageMso="CreateForm" tag="vcs.export.forms" onAction="VCS_ExportAllForms" visible="true"/>
+	  <mso:button id="VCS_Export_Reports" label="Export Reports" screentip="Export all reports to source" size="large" imageMso="CreateReport" tag="vcs.export.reports" onAction="VCS_ExportAllReports" visible="true"/>
+	  <mso:button id="VCS_Export_Macros" label="Export Macros" screentip="Export all macros to source" size="large" imageMso="MacroConvertMacrosToVisualBasic" tag="vcs.export.macros" onAction="VCS_ExportAllMacros" visible="true"/>
+	</mso:group>
+      </mso:tab>
+    </mso:tabs>
+  </mso:ribbon>
+</mso:customUI>
