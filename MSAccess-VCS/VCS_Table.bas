@@ -23,7 +23,7 @@ Public Sub VCS_ExportLinkedTable(ByVal tbl_name As String, ByVal obj_path As Str
     
     Set OutFile = FSO.CreateTextFile(tempFilePath, overwrite:=True, Unicode:=True)
     
-    OutFile.Write CurrentDb.TableDefs(tbl_name).name
+    OutFile.Write CurrentDb.TableDefs(tbl_name).Name
     OutFile.Write vbCrLf
     
     If InStr(1, CurrentDb.TableDefs(tbl_name).connect, "DATABASE=" & CurrentProject.Path) Then
@@ -126,7 +126,7 @@ Private Function TableExportSql(ByVal tbl_name As String) As String
     Count = 0
     For Each fieldObj In rs.Fields
         If Count > 0 Then VCS_String.VCS_Sb_Append sb, ", "
-        VCS_String.VCS_Sb_Append sb, "[" & fieldObj.name & "]"
+        VCS_String.VCS_Sb_Append sb, "[" & fieldObj.Name & "]"
         Count = Count + 1
     Next
     
@@ -136,7 +136,7 @@ Private Function TableExportSql(ByVal tbl_name As String) As String
     For Each fieldObj In rs.Fields
         DoEvents
         If Count > 0 Then VCS_String.VCS_Sb_Append sb, ", "
-        VCS_String.VCS_Sb_Append sb, "[" & fieldObj.name & "]"
+        VCS_String.VCS_Sb_Append sb, "[" & fieldObj.Name & "]"
         Count = Count + 1
     Next
 
@@ -238,7 +238,7 @@ Err_CreateLinkedTable_Fin:
     Fields = InFile.ReadLine()
     Dim Field As Variant
     Dim sql As String
-    sql = "CREATE INDEX __uniqueindex ON " & td.name & " ("
+    sql = "CREATE INDEX __uniqueindex ON " & td.Name & " ("
     
     For Each Field In Split(Fields, ";+")
         sql = sql & "[" & Field & "]" & ","
