@@ -126,7 +126,6 @@ Begin Report
             BackThemeColorIndex =1
             Begin
                 Begin Label
-                    OverlapFlags =4
                     TextAlign =1
                     Left =360
                     Top =60
@@ -145,7 +144,6 @@ Begin Report
                     LayoutCachedHeight =375
                 End
                 Begin Label
-                    OverlapFlags =4
                     TextAlign =1
                     Left =7680
                     Top =60
@@ -177,7 +175,6 @@ Begin Report
             Begin
                 Begin TextBox
                     OldBorderStyle =0
-                    OverlapFlags =4
                     IMESentenceMode =3
                     Left =360
                     Top =60
@@ -196,7 +193,6 @@ Begin Report
                 End
                 Begin ComboBox
                     LimitToList = NotDefault
-                    OverlapFlags =4
                     IMESentenceMode =3
                     ColumnCount =2
                     ListWidth =1440
@@ -233,7 +229,6 @@ Begin Report
             Begin
                 Begin TextBox
                     OldBorderStyle =0
-                    OverlapFlags =4
                     TextAlign =1
                     IMESentenceMode =3
                     Left =60
@@ -254,7 +249,6 @@ Begin Report
                 End
                 Begin TextBox
                     OldBorderStyle =0
-                    OverlapFlags =4
                     TextAlign =3
                     IMESentenceMode =3
                     Left =6300
