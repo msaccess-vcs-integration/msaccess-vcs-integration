@@ -1,3 +1,4 @@
+Attribute VB_Name = "VCS_Query"
 Option Compare Database
 Option Explicit
 
