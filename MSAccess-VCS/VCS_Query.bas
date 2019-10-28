@@ -13,7 +13,7 @@ Public Sub ExportQueryAsSQL(qry As QueryDef, ByVal file_path As String, _
     If Ucs2Convert Then
         Dim tempFileName As String
         tempFileName = VCS_File.VCS_TempFile()
-        writeTextToFile qry.SQL, tempFileName
+        writeTextToFile qry.sql, tempFileName
         VCS_File.VCS_ConvertUcs2Utf8 tempFileName, file_path
     Else
         If Not (qry.connect = "") Then
@@ -22,9 +22,9 @@ Public Sub ExportQueryAsSQL(qry As QueryDef, ByVal file_path As String, _
             If (Right(qryconnect, 1) = vbLf) Then
                 qryconnect = Left(qryconnect, Len(qryconnect) - 2)
             End If
-            writeTextToFile StartConnect & qryconnect & vbCrLf & StartRecRecords & qry.ReturnsRecords & vbCrLf & StartSQL & vbCrLf & qry.SQL, file_path
+            writeTextToFile StartConnect & qryconnect & vbCrLf & StartRecRecords & qry.ReturnsRecords & vbCrLf & StartSQL & vbCrLf & qry.sql, file_path
         Else
-            writeTextToFile qry.SQL, file_path
+            writeTextToFile qry.sql, file_path
         End If
     End If
 
