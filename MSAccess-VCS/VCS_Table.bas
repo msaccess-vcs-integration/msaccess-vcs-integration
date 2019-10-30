@@ -327,9 +327,7 @@ Public Sub VCS_ImportTableData(ByVal tblName As String, ByVal obj_path As String
                 If Len(Value) = 0 Then
                     Value = Null
                 Else
-                    Value = Replace(Value, "\t", vbTab)
-                    Value = Replace(Value, "\n", vbCrLf)
-                    Value = Replace(Value, "\\", "\")
+                    Value = VCS_String.VCS_RmEsc(Value)
                 End If
                 rs(fieldObj.Name) = Value
                 c = c + 1
