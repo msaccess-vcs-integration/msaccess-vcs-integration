@@ -57,7 +57,7 @@ Public Function VCS_RmEsc(Value As String) As String
                 Value = left(Value, i - 1) & "\" & Mid(Value, i + 2)
             Case "n"
                 Value = left(Value, i - 1) & vbCrLf & Mid(Value, i + 2)
-            Case "r"
+            Case "t"
                 Value = left(Value, i - 1) & vbTab & Mid(Value, i + 2)
         End Select
         i = InStr(i + 1, Value, "\")
