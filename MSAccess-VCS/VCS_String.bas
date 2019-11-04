@@ -62,4 +62,5 @@ Public Function VCS_RmEsc(Value As String) As String
         End Select
         i = InStr(i + 1, Value, "\")
     Loop
+    VCS_RmEsc = Value
 End Function
