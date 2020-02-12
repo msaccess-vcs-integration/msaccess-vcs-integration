@@ -1,30 +1,94 @@
 Attribute VB_Name = "VCS_ImportExport"
 Option Compare Database
-
 Option Explicit
+
 ' List of lookup tables that are part of the program rather than the
 ' data, to be exported with source code
 ' Set to "*" to export the contents of all tables
 'Only used in ExportAllSource
-Private Const INCLUDE_TABLES As String = ""
-
-Private Const INCLUDE_TABLES_PFS As String = ""
+Private INCLUDE_TABLES As String
 ' This is used in ImportAllSource
-Private Const DebugOutput As Boolean = False
+Private DebugOutput As Boolean
 'this is used in ExportAllSource
 'Causes the VCS_ code to be exported
-Private Const ArchiveMyself As Boolean = False
+Private ArchiveMyself As Boolean
 
 ' Export configuration
-Private Const ExportReports As Boolean = True
-Private Const ExportQueries As Boolean = True
-Private Const ExportForms As Boolean = True
-Private Const ExportMacros As Boolean = True
-Private Const ExportModules As Boolean = True
-Private Const ExportTables As Boolean = True
-
+Private ExportReports As Boolean
+Private ExportQueries As Boolean
+Private ExportForms As Boolean
+Private ExportMacros As Boolean
+Private ExportModules As Boolean
+Private ExportTables As Boolean
 'export/import all Queries as plain SQL text
-Private Const HandleQueriesAsSQL As Boolean = True
+Private HandleQueriesAsSQL As Boolean
+' Whether to update template table with missing fields added to child.
+Private UpdateTemplateTable As Boolean
+
+
+Private Function StrToBool(ByVal sStr As String, ByVal default As Boolean)
+    StrToBool = default
+
+    sStr = LCase(sStr)
+    If sStr = "yes" Or sStr = "true" Then
+        StrToBool = True
+    Else
+        If sStr = "no" Or sStr = "false" Then
+            StrToBool = False
+        End If
+    End If
+End Function
+
+Private Function BoolToStr(ByVal inBool As Boolean) As String
+    If inBool = True Then
+        BoolToStr = "True"
+    Else
+        BoolToStr = "False"
+    End If
+End Function
+
+Public Sub LoadCustomisations()
+    Dim bLoaded As Boolean
+    Dim sValue As String
+    Dim path As String
+    Dim VCSFileName as string
+
+    VCSFileName = "vcs.cfg"
+
+    If Not bLoaded Then
+        path = VCS_Dir.VCS_ProjectPath() & VCSFileName
+
+        'Load configuration items
+        ArchiveMyself = StrToBool(GetSectionEntry("Config", "ArchiveMyself", path), False)
+        INCLUDE_TABLES = GetSectionEntry("Config", "IncludeTables", path)
+        DebugOutput = StrToBool(GetSectionEntry("Config", "DebugOutput", path), False)
+        ExportReports = StrToBool(GetSectionEntry("Config", "ExportReports", path), True)
+        ExportForms = StrToBool(GetSectionEntry("Config", "ExportForms", path), True)
+        ExportQueries = StrToBool(GetSectionEntry("Config", "ExportQueries", path), True)
+        ExportMacros = StrToBool(GetSectionEntry("Config", "ExportMacros", path), True)
+        ExportModules = StrToBool(GetSectionEntry("Config", "ExportModules", path), True)
+        ExportTables = StrToBool(GetSectionEntry("Config", "ExportTables", path), True)
+        HandleQueriesAsSQL = StrToBool(GetSectionEntry("Config", "HandleQueriesAsSQL", path), True)
+        UpdateTemplateTable = StrToBool(GetSectionEntry("Config", "UpdateTemplateTable", path), False)
+
+        'save config file settings.
+        Call SetSectionEntry("Info", "FileComment", "This file is used by the VCS system for configuration information.", path)
+        Call SetSectionEntry("Info", "DO-NOT-DELETE-THIS-FILE", "DO not delete this file!", path)
+        Call SetSectionEntry("Config", "ArchiveMyself", BoolToStr(ArchiveMyself), path)
+        'Call SetSectionEntry("Config", "IncludeTables", Nz(INCLUDE_TABLES, "None"), path)
+        'Commented out for now to prevent accidentially overwriting the thing.
+        Call SetSectionEntry("Config", "DebugOutput", BoolToStr(DebugOutput), path)
+        Call SetSectionEntry("Config", "ExportReports", BoolToStr(ExportReports), path)
+        Call SetSectionEntry("Config", "ExportForms", BoolToStr(ExportForms), path)
+        Call SetSectionEntry("Config", "ExportQueries", BoolToStr(ExportQueries), path)
+        Call SetSectionEntry("Config", "ExportMacros", BoolToStr(ExportMacros), path)
+        Call SetSectionEntry("Config", "ExportModules", BoolToStr(ExportModules), path)
+        Call SetSectionEntry("Config", "ExportTables", BoolToStr(ExportTables), path)
+        Call SetSectionEntry("Config", "HandleQueriesAsSQL", BoolToStr(HandleQueriesAsSQL), path)
+        Call SetSectionEntry("Config", "UpdateTemplateTable", BoolToStr(UpdateTemplateTable), path)
+    End If
+
+End Sub
 
 'returns true if named module is NOT part of the VCS code
 Private Function IsNotVCS(ByVal moduleName As String) As Boolean
