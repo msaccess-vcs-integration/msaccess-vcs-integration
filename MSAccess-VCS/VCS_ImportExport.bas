@@ -41,6 +41,7 @@ Private Function IsNotVCS(ByVal moduleName As String) As Boolean
       moduleName <> "VCS_Relation" And _
       moduleName <> "VCS_Query" And _
       moduleName <> "VCS_Button_Functions" Then
+      moduleName <> "VCS_IniHandler" And _
         IsNotVCS = True
     Else
         IsNotVCS = False
