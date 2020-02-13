@@ -386,6 +386,8 @@ Public Sub ImportAllSource(Optional ByVal isButton As Boolean)
 
     Set FSO = CreateObject("Scripting.FileSystemObject")
 
+    'Adding in Config Load
+    LoadCustomisations
     CloseFormsReports
     'InitVCS_UsingUcs2
 
