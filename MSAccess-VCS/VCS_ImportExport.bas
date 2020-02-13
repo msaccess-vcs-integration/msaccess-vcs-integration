@@ -26,27 +26,6 @@ Private HandleQueriesAsSQL As Boolean
 Private UpdateTemplateTable As Boolean
 
 
-Private Function StrToBool(ByVal sStr As String, ByVal default As Boolean)
-    StrToBool = default
-
-    sStr = LCase(sStr)
-    If sStr = "yes" Or sStr = "true" Then
-        StrToBool = True
-    Else
-        If sStr = "no" Or sStr = "false" Then
-            StrToBool = False
-        End If
-    End If
-End Function
-
-Private Function BoolToStr(ByVal inBool As Boolean) As String
-    If inBool = True Then
-        BoolToStr = "True"
-    Else
-        BoolToStr = "False"
-    End If
-End Function
-
 Public Sub LoadCustomisations()
     Dim bLoaded As Boolean
     Dim sValue As String
@@ -390,6 +369,7 @@ Public Sub ImportAllSource(Optional ByVal isButton As Boolean)
 
     'Adding in Config Load
     LoadCustomisations
+
     CloseFormsReports
     'InitVCS_UsingUcs2
 
@@ -612,7 +592,10 @@ Public Sub ImportProject(Optional ByVal isButton As Boolean)
     Else
         includeTables = True
     End If
-    
+
+    'Adding in Config Load
+    LoadCustomisations
+
     If MsgBox("This action will delete all existing: " & vbCrLf & _
               vbCrLf & _
               IIf(includeTables, Chr$(149) & " Tables" & vbCrLf, "") & _
@@ -741,6 +724,26 @@ ErrorHandler:
                 Err.Description
 End Sub
 
+Private Function StrToBool(ByVal sStr As String, ByVal default As Boolean)
+    StrToBool = default
+
+    sStr = LCase(sStr)
+    If sStr = "yes" Or sStr = "true" Then
+        StrToBool = True
+    Else
+        If sStr = "no" Or sStr = "false" Then
+            StrToBool = False
+        End If
+    End If
+End Function
+
+Private Function BoolToStr(ByVal inBool As Boolean) As String
+    If inBool = True Then
+        BoolToStr = "True"
+    Else
+        BoolToStr = "False"
+    End If
+End Function
 
 'errno 457 - duplicate key (& item)
 Private Function StrSetToCol(ByVal strSet As String, ByVal delimiter As String) As Collection 'throws errors
