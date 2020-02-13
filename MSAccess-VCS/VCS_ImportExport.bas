@@ -141,6 +141,8 @@ Public Sub ExportAllSource(Optional ByVal isButton As Boolean)
         ExportTablesTemp = ExportTables
     End If
     
+    'Adding in Config Load
+    LoadCustomisations
     
 
     CloseFormsReports
