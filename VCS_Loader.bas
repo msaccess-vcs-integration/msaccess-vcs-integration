@@ -20,9 +20,9 @@ On Error GoTo Err_DirCheck
 Err_DirCheck:
     
     If Err.Number = 53 Then 'SourceDirectory does not exist
-        Debug.Print Err.Number & " | " & "File/Directory not found"
+        Debug.Print "Error: " & Err.Number & " | " & "File/Directory not found"
     Else
-        Debug.Print Err.Number & " | " & Err.Description
+        Debug.Print "Error: " & Err.Number & " | " & Err.Description
     End If
     Exit Sub
 Fin_DirCheck:
@@ -66,7 +66,7 @@ On Error GoTo Err_LoadHandler
     GoTo Fin_LoadHandler
     
 Err_LoadHandler:
-    Debug.Print Err.Number & " | " & Err.Description
+    Debug.Print "Error: " & Err.Number & " | " & Err.Description
     Resume Next
 
 Fin_LoadHandler:
