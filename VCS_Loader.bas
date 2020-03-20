@@ -70,12 +70,12 @@ Err_LoadHandler:
     Resume Next
 
 Fin_LoadHandler:
-    Debug.Print "Done"
-    
     displayFormVersion
+
 End Sub
 
 Public Sub displayFormVersion()
+On Error GoTo Err_FormVersion
     Dim versionPath As String, FormsVersion As String, textline As String, posLat As Integer, posLong As Integer
     versionPath = CurrentProject.Path & "\VERSION.txt"
     Open versionPath For Input As #1
@@ -88,4 +88,19 @@ Public Sub displayFormVersion()
     Close #1
 
     MsgBox "Form Version: " & FormsVersion & " loaded"
+
+    GoTo Fin_FormVersion
+    
+Err_FormVersion:
+
+    If Err.Number = 53 Then 'VERSION.txt does not exist
+        Debug.Print "Error: " & Err.Number & " | " & "Path to VERSION.txt not found"
+    Else
+        Debug.Print "Error: " & Err.Number & " | " & Err.Description
+    End If
+    Exit Sub
+
+Fin_FormVersion:
+    Debug.Print "Done"
+
 End Sub
