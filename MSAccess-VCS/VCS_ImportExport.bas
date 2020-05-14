@@ -279,7 +279,6 @@ Err_TablePFSNotFound:
                 For Each aRelation In CurrentDb.Relations
                         ' Exclude relations from system tables and inherited (linked) relations
                         ' Skip if dbRelationDontEnforce property is not set. The relationship is already in the table xml file. - sean
-			' Fix logic to handle dbRelationDontEnforce bit even if other bits are set. - mdmay74
                         If Not (aRelation.Name = "MSysNavPaneGroupsMSysNavPaneGroupToObjects" _
                                         Or aRelation.Name = "MSysNavPaneGroupCategoriesMSysNavPaneGroups" _
                                         Or (aRelation.Attributes And DAO.RelationAttributeEnum.dbRelationInherited) = _
