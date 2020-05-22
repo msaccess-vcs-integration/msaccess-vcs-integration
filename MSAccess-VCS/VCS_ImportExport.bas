@@ -283,7 +283,8 @@ Err_TablePFSNotFound:
                                         Or aRelation.Name = "MSysNavPaneGroupCategoriesMSysNavPaneGroups" _
                                         Or (aRelation.Attributes And DAO.RelationAttributeEnum.dbRelationInherited) = _
                                         DAO.RelationAttributeEnum.dbRelationInherited) _
-                                        And (aRelation.Attributes = DAO.RelationAttributeEnum.dbRelationDontEnforce) Then
+                           And ((aRelation.Attributes And DAO.RelationAttributeEnum.dbRelationDontEnforce) = _
+			  		DAO.RelationAttributeEnum.dbRelationDontEnforce) Then
                                 VCS_Relation.VCS_ExportRelation aRelation, obj_path & aRelation.Name & ".txt"
                                 obj_count = obj_count + 1
                         End If
