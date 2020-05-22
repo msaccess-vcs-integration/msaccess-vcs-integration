@@ -20,9 +20,9 @@ On Error GoTo Err_DirCheck
 Err_DirCheck:
     
     If Err.Number = 53 Then 'SourceDirectory does not exist
-        Debug.Print Err.Number & " | " & "File/Directory not found"
+        Debug.Print "Error: " & Err.Number & " | " & "File/Directory not found"
     Else
-        Debug.Print Err.Number & " | " & Err.Description
+        Debug.Print "Error: " & Err.Number & " | " & Err.Description
     End If
     Exit Sub
 Fin_DirCheck:
@@ -66,18 +66,18 @@ On Error GoTo Err_LoadHandler
     GoTo Fin_LoadHandler
     
 Err_LoadHandler:
-    Debug.Print Err.Number & " | " & Err.Description
+    Debug.Print "Error: " & Err.Number & " | " & Err.Description
     Resume Next
 
 Fin_LoadHandler:
-    Debug.Print "Done"
-    
-    displayFormVersion
+    displayFormVersion SourceDirectory
+
 End Sub
 
-Public Sub displayFormVersion()
+Public Sub displayFormVersion(ByVal SourceDirectory As String)
+On Error GoTo Err_FormVersion
     Dim versionPath As String, FormsVersion As String, textline As String, posLat As Integer, posLong As Integer
-    versionPath = CurrentProject.Path & "\VERSION.txt"
+    versionPath = SourceDirectory & "..\VERSION.txt"
     Open versionPath For Input As #1
 
     Do Until EOF(1)
@@ -88,4 +88,19 @@ Public Sub displayFormVersion()
     Close #1
 
     MsgBox "Form Version: " & FormsVersion & " loaded"
+
+    GoTo Fin_FormVersion
+    
+Err_FormVersion:
+
+    If Err.Number = 53 Then 'VERSION.txt does not exist
+        Debug.Print "Error: " & Err.Number & " | " & "Path to VERSION.txt not found"
+    Else
+        Debug.Print "Error: " & Err.Number & " | " & Err.Description
+    End If
+    Exit Sub
+
+Fin_FormVersion:
+    Debug.Print "Done"
+
 End Sub
