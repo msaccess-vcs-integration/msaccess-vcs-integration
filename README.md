@@ -111,13 +111,9 @@ In the `demo\` folder there's a blank database that you can use with to provide 
 
 Pull requests, issue reports etc welcomed.
 
-https://github.com/timabell/msaccess-vcs-integration seems to currently be the
-most actively maintained branch, and [Tim Abell](https://github.com/timabell)
-will generally accept pull requests to keep the project alive but has minimal
-capacity to ensure correctness so please try and keep the quality as good as
-you can. Thanks! Several other people have been made collaborators to help
-keep the repo alive. Better ideas for running this project would be welcome
-https://github.com/timabell/msaccess-vcs-integration/issues/32
+https://github.com/msaccess-vcs-integration/msaccess-vcs-integration is the most actively maintained branch, and [Tim Abell](https://github.com/timabell) will generally accept pull requests to keep the project alive but has minimal capacity to ensure correctness so please try and keep the quality as good as you can. Thanks! 
+
+Several other people have been made collaborators to help keep the repo alive. Better ideas for running this project would be welcome, please discuss in [the related issue](https://github.com/timabell/msaccess-vcs-integration/issues/32).
 
 # Related tools
 
