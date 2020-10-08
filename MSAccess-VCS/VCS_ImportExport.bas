@@ -84,6 +84,7 @@ Public Sub ExportAllSource(Optional ByVal isButton As Boolean)
     source_path = VCS_Dir.VCS_ProjectPath() & "source\"
     source_path_pfs = VCS_Dir.VCS_ProjectPath() & "pfs\"
     VCS_Dir.VCS_MkDirIfNotExist source_path
+    VCS_Dir.VCS_MkDirIfNotExist source_path_pfs
 
     Debug.Print
 
