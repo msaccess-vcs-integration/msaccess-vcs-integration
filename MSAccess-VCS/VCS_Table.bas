@@ -76,7 +76,8 @@ Public Sub VCS_ExportTableDef(ByVal TableName As String, ByVal directory As Stri
     Application.ExportXML _
     ObjectType:=acExportTable, _
     DataSource:=TableName, _
-    SchemaTarget:=fileName
+    SchemaTarget:=fileName, _
+    OtherFlags:=acExportAllTableAndFieldProperties
     
     'exort Data Macros
     VCS_DataMacro.VCS_ExportDataMacros TableName, directory
@@ -212,6 +213,13 @@ Public Sub VCS_ExportTableData(ByVal tbl_name As String, ByVal obj_path As Strin
     FSO.DeleteFile tempFileName
 End Sub
 
+' Kill Table if Exists
+Private Sub KillTable(ByVal tblName As String, Db As Object)
+    If TableExists(tblName) Then
+        Db.Execute "DROP TABLE [" & tblName & "]"
+    End If
+End Sub
+
 Public Sub VCS_ImportLinkedTable(ByVal tblName As String, ByRef obj_path As String)
     Dim Db As DAO.Database
     Dim FSO As Object
@@ -288,6 +296,8 @@ End Sub
 ' Import Table Definition
 Public Sub VCS_ImportTableDef(ByVal tblName As String, ByVal directory As String)
     Dim filePath As String
+    
+    KillTable tblName, CurrentDb
     
     filePath = directory & tblName & ".xml"
     Application.ImportXML DataSource:=filePath, ImportOptions:=acStructureOnly
