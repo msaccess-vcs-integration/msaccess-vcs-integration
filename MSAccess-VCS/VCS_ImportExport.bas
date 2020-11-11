@@ -81,8 +81,8 @@ Public Sub ExportAllSource(Optional ByVal isButton As Boolean)
     CloseFormsReports
     'InitVCS_UsingUcs2
 
-    source_path = VCS_Dir.VCS_ProjectPath() & "source\"
-    source_path_pfs = VCS_Dir.VCS_ProjectPath() & "pfs\"
+    source_path = VCS_Dir.VCS_ProjectPath() & Application.CurrentProject.Name & ".source\"
+    source_path_pfs = VCS_Dir.VCS_ProjectPath() & Application.CurrentProject.Name & ".pfs\"
     VCS_Dir.VCS_MkDirIfNotExist source_path
 
     Debug.Print
@@ -325,7 +325,7 @@ Public Sub ImportAllSource(Optional ByVal isButton As Boolean)
     CloseFormsReports
     'InitVCS_UsingUcs2
 
-    source_path = VCS_Dir.VCS_ProjectPath() & "source\"
+    source_path = VCS_Dir.VCS_ProjectPath() & Application.CurrentProject.Name & ".source\"
     If Not FSO.FolderExists(source_path) Then
         MsgBox "No source found at:" & vbCrLf & source_path, vbExclamation, "Import failed"
         Exit Sub
@@ -720,9 +720,3 @@ Exit_Proc:
 Err_Handle:
     Resume Exit_Proc
 End Function
-
-
-
-
-
-
