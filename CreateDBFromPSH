@@ -1,0 +1,25 @@
+# This file creates a completely new database from powershell using Access COM plugin.
+# It creates a new Access database, then loads VCS Loader in the database. Afterwards it loads the framework and imports the project from source repository.
+# This script can be used in a build server with Access installed on it.
+# Comment line 90 from VCS_Loader.bas 'MsgBox "Form Version: " & FormsVersion & " loaded"
+# Change VCS_ImportExport.bas:
+# line 539 dim doask as Boolean
+# line 549:insert "If doask Then"
+# line 563: add "End If"
+# In build server copy created database to artifact directory and setup release pipeline
+
+param ($loaderDir, $dbName)
+
+$access = New-Object -ComObject Access.Application
+$access.NewCurrentDatabase($dbName)
+$a = [Microsoft.Office.Interop.Access.AcObjectType]::acModule
+
+$appDir = "{0}\MSAccess-VCS\" -f $loaderDir
+$access.LoadFromText($a, "VCS_Loader","$loaderDir\vcs_loader.bas")
+$access.Run('loadVCS',[ref]$appDir)
+
+$access.Run('ImportProject')
+
+$access.CloseCurrentDatabase()
+
+$access.Quit()
